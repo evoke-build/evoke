@@ -268,7 +268,7 @@ $ evoke try "the lights in the den and the ones in the office, the second one di
     → waits for a yes: lights room="office" state="dim" · write · weakest: route 0.88
       a write runs at 0.90 or more
 
-  replay answered 73 questions in 4 rounds
+  replay answered 74 questions in 5 rounds
 $ evoke why
   "kill the lights in the den and the office"
 

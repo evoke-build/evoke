@@ -1,0 +1,34 @@
+reflex = 1
+
+description = """
+Search a service's logs from the last hour.
+Its most frequent error messages and how often each came, in one region or all."""
+not_for = ["a service's error rate", "a service's deploy log or release history"]
+tags = ["logs", "outage"]
+effect = "read"
+confirm = "Search the logs of {service}?"
+run = "logs.mts"
+returns = "logs"
+
+[args.service]
+ask   = "Which service?"
+vocab = "services"
+
+[args.region]
+ask      = "In which region?"
+vocab    = "regions"
+optional = true
+
+[examples]
+"pull the logs for checkout"                      = {}
+"search the payments logs in eu-west"             = {}
+"what do the search logs say"                     = {}
+"what is checkout logging in us-east"             = {}
+"top log errors for payments"                     = {}
+"search the logs of checkout"                     = {}
+"what errors are in the payments logs in eu west" = {}
+
+[tests]
+"dig through the search logs"         = {}
+"what percent of checkout calls fail" = false
+"deploy history of payments"          = false

@@ -350,6 +350,10 @@
         },
         "weave.share_78_37_status__component": {
           "yes": 0.05
+        },
+        "weave.span_78_109": {
+          "none": 0.9,
+          "errors": 0.1
         }
       }
     }

@@ -27,7 +27,7 @@ pub(crate) const HOLDS: &str = "whole";
 
 /// The call as a sentence: what the reflex does, by its description whole, then each argument's ask with the
 /// value the reading holds, or that none is said; a flag only where the request states it.
-fn read_back(
+pub(crate) fn read_back(
     plan: &Plan,
     reflex: &LocalName,
     active: &Active,

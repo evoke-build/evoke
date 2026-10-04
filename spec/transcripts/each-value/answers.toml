@@ -1,0 +1,435 @@
+# What the replay adapter answers, keyed by utterance identity (spec/README.md): the stand-ins of the each-value flow, as the engine answered them on 2026-10-04.
+id = "replay"
+
+[gate]
+route = 0.5
+fits  = 0.3
+read  = 0.8
+write = 0.9
+whole = 0.3
+
+[answers."look up the hires ana, maria and sam"]
+"weave.split_0"                  = { yes = 0.19 }
+"weave.split_1"                  = { yes = 0.22 }
+"weave.count"                    = { more = 0.59, one = 0.41 }
+"weave.again_23_28_hire__person" = { also = 0.9, nothing = 0.07, out = 0.03 }
+"weave.again_33_36_hire__person" = { instead = 0.01, also = 0.79, nothing = 0.14, out = 0.06 }
+route                            = { hire = 1.0 }
+"errors.service"                 = { unstated = 0.57, search = 0.08, none = 0.35 }
+"errors.region"                  = { unstated = 1.0 }
+"logs.service"                   = { unstated = 0.59, search = 0.1, none = 0.31 }
+"logs.region"                    = { unstated = 1.0 }
+"hire.person"                    = { ana = 0.04, unstated = 0.93, none = 0.03 }
+"order.person"                   = { unstated = 1.0 }
+"order.model"                    = { unstated = 0.99, none = 0.01 }
+"weave.view_errors__service"     = { unstated = 0.17, search = 0.1, none = 0.73 }
+"weave.view_errors__region"      = { unstated = 0.74, none = 0.26 }
+"weave.view_logs__service"       = { unstated = 0.19, search = 0.11, none = 0.7 }
+"weave.view_logs__region"        = { unstated = 0.74, none = 0.26 }
+"weave.view_hire__person"        = { ana = 0.68, maria = 0.11, unstated = 0.03, sam = 0.03, none = 0.15 }
+"weave.is_hire__person_0"        = { yes = 0.45 }
+"weave.is_hire__person_1"        = { yes = 0.47 }
+"weave.is_hire__person_2"        = { yes = 0.53 }
+"weave.view_order__person"       = { ana = 0.65, maria = 0.11, unstated = 0.04, sam = 0.04, none = 0.16 }
+"weave.is_order__person_0"       = { yes = 0.41 }
+"weave.is_order__person_1"       = { yes = 0.39 }
+"weave.is_order__person_2"       = { yes = 0.42 }
+"weave.view_order__model"        = { unstated = 0.52, pro = 0.01, none = 0.46, air = 0.01 }
+"weave.does_hire_0_3"            = { action = 1.0 }
+"weave.does_hire_5_7"            = { "arg:person" = 0.91, more = 0.09 }
+
+[answers."look up the hires ana"]
+"errors.service"             = { search = 0.21, none = 0.35, unstated = 0.44 }
+"weave.view_hire__person"    = { ana = 0.99, none = 0.01 }
+"errors.region"              = { us-east = 0.01, eu-west = 0.01, none = 0.04, unstated = 0.94 }
+"order.model"                = { air = 0.01, pro = 0.04, none = 0.03, unstated = 0.92 }
+"weave.is_hire__person_2"    = { yes = 0.65 }
+"weave.view_order__model"    = { air = 0.06, pro = 0.01, none = 0.37, unstated = 0.56 }
+route                        = { hire = 1.0 }
+"logs.region"                = { us-east = 0.01, eu-west = 0.01, none = 0.02, unstated = 0.96 }
+"order.person"               = { ana = 0.72, unstated = 0.28 }
+"weave.view_logs__region"    = { us-east = 0.01, eu-west = 0.01, none = 0.34, unstated = 0.64 }
+"weave.view_order__person"   = { ana = 0.99, none = 0.01 }
+"logs.service"               = { none = 0.37, search = 0.25, unstated = 0.38 }
+"hire.person"                = { ana = 0.91, none = 0.01, unstated = 0.08 }
+"weave.view_errors__service" = { search = 0.22, none = 0.53, unstated = 0.25 }
+"weave.view_errors__region"  = { us-east = 0.01, eu-west = 0.01, none = 0.32, unstated = 0.66 }
+"weave.view_logs__service"   = { search = 0.25, none = 0.52, unstated = 0.23 }
+"weave.is_order__person_2"   = { yes = 0.62 }
+"weave.does_hire_0_3"        = { action = 1.0 }
+"weave.against_3566499027"   = { less = 0.19, other = 0.26, whole = 0.55 }
+
+[answers."maria"]
+route                        = { none = 0.12, hire = 0.88 }
+"hire.person"                = { maria = 0.7, unstated = 0.3 }
+"weave.view_hire__person"    = { maria = 1.0 }
+"weave.is_hire__person_0"    = { yes = 0.54 }
+"errors.service"             = { none = 0.19, unstated = 0.81 }
+"errors.region"              = { us-east = 0.01, eu-west = 0.01, none = 0.08, unstated = 0.9 }
+"logs.service"               = { unstated = 0.85, none = 0.15 }
+"logs.region"                = { us-east = 0.01, unstated = 0.92, none = 0.07 }
+"order.person"               = { unstated = 0.15, maria = 0.85 }
+"order.model"                = { pro = 0.01, unstated = 0.98, none = 0.01 }
+"weave.view_errors__service" = { none = 0.55, unstated = 0.45 }
+"weave.view_errors__region"  = { us-east = 0.01, eu-west = 0.01, none = 0.53, unstated = 0.45 }
+"weave.view_logs__service"   = { none = 0.58, unstated = 0.42 }
+"weave.view_logs__region"    = { us-east = 0.01, eu-west = 0.01, none = 0.56, unstated = 0.42 }
+"weave.view_order__person"   = { maria = 1.0 }
+"weave.is_order__person_0"   = { yes = 0.61 }
+"weave.view_order__model"    = { pro = 0.04, unstated = 0.67, air = 0.01, none = 0.28 }
+
+[answers."sam"]
+route                        = { hire = 0.44, none = 0.56 }
+"hire.person"                = { sam = 0.81, unstated = 0.19 }
+"weave.view_hire__person"    = { sam = 1.0 }
+"weave.is_hire__person_1"    = { yes = 0.57 }
+"errors.service"             = { none = 0.17, unstated = 0.83 }
+"errors.region"              = { us-east = 0.01, unstated = 0.88, none = 0.11 }
+"logs.service"               = { unstated = 0.82, none = 0.18 }
+"logs.region"                = { us-east = 0.02, unstated = 0.85, none = 0.13 }
+"order.person"               = { sam = 0.87, unstated = 0.13 }
+"order.model"                = { unstated = 0.98, none = 0.02 }
+"weave.view_errors__service" = { unstated = 0.43, none = 0.57 }
+"weave.view_errors__region"  = { us-east = 0.03, eu-west = 0.01, unstated = 0.5, none = 0.46 }
+"weave.view_logs__service"   = { unstated = 0.4, none = 0.6 }
+"weave.view_logs__region"    = { us-east = 0.04, eu-west = 0.01, unstated = 0.53, none = 0.42 }
+"weave.view_order__person"   = { sam = 1.0 }
+"weave.is_order__person_1"   = { yes = 0.6 }
+"weave.view_order__model"    = { unstated = 0.58, air = 0.01, none = 0.41 }
+
+[answers."look up the hires maria"]
+"hire.person"              = { maria = 0.87, unstated = 0.13 }
+"weave.view_hire__person"  = { maria = 1.0 }
+"weave.is_hire__person_0"  = { yes = 0.55 }
+"weave.does_hire_0_3"      = { action = 1.0 }
+"weave.against_1142737232" = { whole = 0.54, less = 0.22, other = 0.24 }
+
+[answers."look up the hires sam"]
+"hire.person"             = { sam = 0.88, unstated = 0.12 }
+"weave.view_hire__person" = { sam = 1.0 }
+"weave.is_hire__person_1" = { yes = 0.63 }
+"weave.does_hire_0_3"     = { action = 1.0 }
+
+[answers."error rate for payments in eu-west, and the same for us-east"]
+"weave.split_0"              = { yes = 0.9 }
+"weave.count"                = { two = 1.0 }
+route                        = { errors = 1.0 }
+"errors.service"             = { payments = 0.99, unstated = 0.01 }
+"errors.region"              = { eu-west = 0.4, us-east = 0.03, none = 0.05, unstated = 0.52 }
+"logs.service"               = { payments = 0.99, unstated = 0.01 }
+"logs.region"                = { eu-west = 0.4, us-east = 0.03, none = 0.06, unstated = 0.51 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { none = 0.1, unstated = 0.9 }
+"weave.view_errors__service" = { payments = 1.0 }
+"weave.is_errors__service_1" = { yes = 0.85 }
+"weave.view_errors__region"  = { eu-west = 0.71, us-east = 0.11, none = 0.16, unstated = 0.02 }
+"weave.is_errors__region_0"  = { yes = 0.65 }
+"weave.is_errors__region_1"  = { yes = 0.58 }
+"weave.view_logs__service"   = { payments = 1.0 }
+"weave.is_logs__service_1"   = { yes = 0.85 }
+"weave.view_logs__region"    = { eu-west = 0.72, us-east = 0.13, none = 0.13, unstated = 0.02 }
+"weave.is_logs__region_0"    = { yes = 0.64 }
+"weave.is_logs__region_1"    = { yes = 0.59 }
+"weave.view_hire__person"    = { none = 0.03, unstated = 0.97 }
+"weave.view_order__person"   = { none = 0.04, unstated = 0.96 }
+"weave.view_order__model"    = { none = 0.44, unstated = 0.56 }
+"weave.does_errors_0_1"      = { action = 0.02, "arg:service" = 0.01, result = 0.97 }
+"weave.does_errors_8_8"      = { action = 0.06, "arg:service" = 0.01, result = 0.65, "arg:region" = 0.1, more = 0.18 }
+"weave.does_errors_10_10"    = { "arg:region" = 0.96, more = 0.04 }
+
+[answers."error rate for payments in eu-west"]
+route                        = { errors = 1.0 }
+"errors.service"             = { payments = 1.0 }
+"errors.region"              = { eu-west = 1.0 }
+"logs.service"               = { payments = 1.0 }
+"logs.region"                = { eu-west = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 0.89, none = 0.11 }
+"weave.view_errors__service" = { payments = 1.0 }
+"weave.is_errors__service_1" = { yes = 0.85 }
+"weave.view_errors__region"  = { eu-west = 1.0 }
+"weave.is_errors__region_0"  = { yes = 0.87 }
+"weave.view_logs__service"   = { payments = 1.0 }
+"weave.is_logs__service_1"   = { yes = 0.85 }
+"weave.view_logs__region"    = { eu-west = 1.0 }
+"weave.is_logs__region_0"    = { yes = 0.86 }
+"weave.view_hire__person"    = { unstated = 0.97, none = 0.03 }
+"weave.view_order__person"   = { unstated = 0.98, none = 0.02 }
+"weave.view_order__model"    = { unstated = 0.49, none = 0.51 }
+"weave.does_errors_0_1"      = { "arg:service" = 0.01, action = 0.03, result = 0.96 }
+"weave.against_938324902"    = { whole = 0.9, less = 0.09, other = 0.01 }
+
+[answers."the same for us-east"]
+route                        = { logs = 0.08, none = 0.76, errors = 0.16 }
+"errors.service"             = { unstated = 0.99, none = 0.01 }
+"errors.region"              = { us-east = 1.0 }
+"logs.service"               = { unstated = 1.0 }
+"logs.region"                = { us-east = 0.99, unstated = 0.01 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 0.99, none = 0.01 }
+"weave.view_errors__service" = { unstated = 0.78, none = 0.22 }
+"weave.view_errors__region"  = { us-east = 1.0 }
+"weave.is_errors__region_1"  = { yes = 0.86 }
+"weave.view_logs__service"   = { unstated = 0.79, none = 0.21 }
+"weave.view_logs__region"    = { us-east = 1.0 }
+"weave.is_logs__region_1"    = { yes = 0.87 }
+"weave.view_hire__person"    = { none = 0.11, unstated = 0.89 }
+"weave.view_order__person"   = { unstated = 0.94, none = 0.06 }
+"weave.view_order__model"    = { none = 0.13, unstated = 0.87 }
+
+[answers."error rate for payments in us-east"]
+route                        = { errors = 1.0 }
+"errors.service"             = { payments = 1.0 }
+"errors.region"              = { us-east = 1.0 }
+"weave.view_errors__service" = { payments = 1.0 }
+"weave.is_errors__service_1" = { yes = 0.83 }
+"weave.view_errors__region"  = { us-east = 1.0 }
+"weave.is_errors__region_1"  = { yes = 0.93 }
+"weave.does_errors_0_1"      = { action = 0.03, result = 0.96, "arg:service" = 0.01 }
+"weave.against_3436830913"   = { whole = 0.92, less = 0.08 }
+"logs.service"               = { unstated = 1.0 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 1.0 }
+"weave.view_logs__service"   = { unstated = 1.0 }
+"weave.is_logs__service_1"   = { yes = 0.05 }
+"weave.view_logs__region"    = { unstated = 1.0 }
+"weave.is_logs__region_1"    = { yes = 0.05 }
+"weave.view_hire__person"    = { unstated = 1.0 }
+"weave.view_order__person"   = { unstated = 1.0 }
+"weave.view_order__model"    = { unstated = 1.0 }
+
+[answers."look up ana & maria, order both a pro"]
+"weave.split_0"                     = { yes = 0.34 }
+"weave.split_1"                     = { yes = 0.9 }
+"weave.count"                       = { two = 0.79, more = 0.2, one = 0.01 }
+"weave.share_21_0_order__person"    = { yes = 0.4 }
+"weave.share_21_14_order__person"   = { yes = 0.36 }
+route                               = { order = 0.99, hire = 0.01 }
+"errors.service"                    = { unstated = 0.42, none = 0.03, search = 0.07, checkout = 0.48 }
+"errors.region"                     = { unstated = 1.0 }
+"logs.service"                      = { none = 0.03, search = 0.12, checkout = 0.43, unstated = 0.42 }
+"logs.region"                       = { unstated = 1.0 }
+"hire.person"                       = { unstated = 1.0 }
+"order.person"                      = { none = 0.01, ana = 0.02, maria = 0.01, unstated = 0.96 }
+"order.model"                       = { pro = 1.0 }
+"weave.view_errors__service"        = { unstated = 0.08, search = 0.23, none = 0.17, checkout = 0.52 }
+"weave.is_errors__service_0"        = { yes = 0.61 }
+"weave.words_errors__service_21_26" = { none = 0.08, checkout = 0.88, unstated = 0.04 }
+"weave.view_errors__region"         = { none = 0.1, unstated = 0.9 }
+"weave.view_logs__service"          = { unstated = 0.09, search = 0.23, none = 0.16, checkout = 0.52 }
+"weave.is_logs__service_0"          = { yes = 0.61 }
+"weave.words_logs__service_21_26"   = { none = 0.07, checkout = 0.89, unstated = 0.04 }
+"weave.view_logs__region"           = { none = 0.14, unstated = 0.86 }
+"weave.view_hire__person"           = { none = 0.15, ana = 0.68, maria = 0.15, unstated = 0.02 }
+"weave.is_hire__person_0"           = { yes = 0.35 }
+"weave.is_hire__person_2"           = { yes = 0.4 }
+"weave.view_order__person"          = { none = 0.16, ana = 0.68, maria = 0.14, unstated = 0.02 }
+"weave.is_order__person_0"          = { yes = 0.4 }
+"weave.is_order__person_2"          = { yes = 0.47 }
+"weave.view_order__model"           = { pro = 1.0 }
+"weave.is_order__model_1"           = { yes = 0.88 }
+"weave.does_order_0_0"              = { more = 0.13, "arg:model" = 0.01, action = 0.69, courtesy = 0.12, result = 0.01, "arg:person" = 0.04 }
+"weave.does_order_3_6"              = { more = 0.07, "arg:model" = 0.04, action = 0.25, result = 0.01, "arg:person" = 0.63 }
+
+[answers."look up ana & maria"]
+route                        = { hire = 0.92, none = 0.08 }
+"errors.service"             = { unstated = 0.46, search = 0.42, none = 0.12 }
+"errors.region"              = { unstated = 1.0 }
+"logs.service"               = { unstated = 0.44, search = 0.47, none = 0.09 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 0.99, none = 0.01 }
+"weave.view_errors__service" = { search = 0.43, unstated = 0.22, none = 0.35 }
+"weave.view_errors__region"  = { unstated = 0.71, none = 0.29 }
+"weave.view_logs__service"   = { unstated = 0.23, search = 0.42, none = 0.35 }
+"weave.view_logs__region"    = { unstated = 0.72, none = 0.28 }
+"weave.view_hire__person"    = { unstated = 0.02, maria = 0.11, ana = 0.61, none = 0.26 }
+"weave.is_hire__person_0"    = { yes = 0.4 }
+"weave.is_hire__person_2"    = { yes = 0.43 }
+"weave.view_order__person"   = { unstated = 0.02, maria = 0.12, ana = 0.69, none = 0.17 }
+"weave.is_order__person_0"   = { yes = 0.48 }
+"weave.is_order__person_2"   = { yes = 0.48 }
+"weave.view_order__model"    = { unstated = 0.62, air = 0.01, none = 0.37 }
+"weave.does_hire_0_0"        = { action = 1.0 }
+"weave.does_hire_3_4"        = { more = 0.12, "arg:person" = 0.88 }
+
+[answers."order both a pro"]
+route                             = { order = 0.99, none = 0.01 }
+"errors.service"                  = { checkout = 0.28, unstated = 0.67, none = 0.05 }
+"errors.region"                   = { none = 0.01, unstated = 0.99 }
+"logs.service"                    = { none = 0.03, checkout = 0.22, unstated = 0.75 }
+"logs.region"                     = { none = 0.01, unstated = 0.99 }
+"hire.person"                     = { unstated = 1.0 }
+"order.person"                    = { none = 0.01, unstated = 0.99 }
+"order.model"                     = { pro = 0.98, unstated = 0.02 }
+"weave.view_errors__service"      = { unstated = 0.36, search = 0.01, none = 0.2, checkout = 0.43 }
+"weave.is_errors__service_0"      = { yes = 0.47 }
+"weave.words_errors__service_0_5" = { none = 0.09, unstated = 0.11, checkout = 0.8 }
+"weave.view_errors__region"       = { none = 0.15, unstated = 0.85 }
+"weave.view_logs__service"        = { none = 0.24, search = 0.01, checkout = 0.39, unstated = 0.36 }
+"weave.is_logs__service_0"        = { yes = 0.47 }
+"weave.words_logs__service_0_5"   = { none = 0.09, unstated = 0.1, checkout = 0.81 }
+"weave.view_logs__region"         = { none = 0.14, unstated = 0.86 }
+"weave.view_hire__person"         = { none = 0.12, unstated = 0.88 }
+"weave.view_order__person"        = { none = 0.13, unstated = 0.87 }
+"weave.view_order__model"         = { pro = 1.0 }
+"weave.is_order__model_1"         = { yes = 0.73 }
+"weave.does_order_0_1"            = { action = 0.25, result = 0.02, more = 0.61, "arg:model" = 0.12 }
+
+[answers."look up ana"]
+route                        = { hire = 0.8, none = 0.2 }
+"errors.service"             = { search = 0.53, unstated = 0.44, none = 0.03 }
+"errors.region"              = { unstated = 0.96, none = 0.04 }
+"logs.service"               = { none = 0.03, search = 0.61, unstated = 0.36 }
+"logs.region"                = { unstated = 0.98, none = 0.02 }
+"hire.person"                = { ana = 0.32, unstated = 0.68 }
+"order.person"               = { ana = 0.49, unstated = 0.51 }
+"order.model"                = { pro = 0.02, air = 0.01, unstated = 0.96, none = 0.01 }
+"weave.view_errors__service" = { none = 0.22, search = 0.6, unstated = 0.18 }
+"weave.view_errors__region"  = { unstated = 0.67, none = 0.33 }
+"weave.view_logs__service"   = { none = 0.22, search = 0.61, unstated = 0.17 }
+"weave.view_logs__region"    = { unstated = 0.68, none = 0.32 }
+"weave.view_hire__person"    = { ana = 1.0 }
+"weave.is_hire__person_2"    = { yes = 0.48 }
+"weave.view_order__person"   = { ana = 1.0 }
+"weave.is_order__person_2"   = { yes = 0.58 }
+"weave.view_order__model"    = { pro = 0.01, air = 0.03, unstated = 0.61, none = 0.35 }
+"weave.does_hire_0_0"        = { action = 1.0 }
+
+[answers."order ana a pro"]
+route                             = { order = 0.9, none = 0.1 }
+"order.person"                    = { none = 0.07, unstated = 0.16, ana = 0.77 }
+"order.model"                     = { pro = 1.0 }
+"weave.view_order__person"        = { none = 0.06, unstated = 0.02, ana = 0.92 }
+"weave.is_order__person_2"        = { yes = 0.66 }
+"weave.view_order__model"         = { pro = 1.0 }
+"weave.is_order__model_1"         = { yes = 0.85 }
+"weave.does_order_0_0"            = { action = 1.0 }
+"errors.service"                  = { unstated = 1.0 }
+"errors.region"                   = { unstated = 1.0 }
+"logs.service"                    = { unstated = 1.0 }
+"logs.region"                     = { unstated = 1.0 }
+"hire.person"                     = { unstated = 1.0 }
+"weave.view_errors__service"      = { unstated = 1.0 }
+"weave.is_errors__service_0"      = { yes = 0.05 }
+"weave.words_errors__service_0_5" = { unstated = 1.0 }
+"weave.view_errors__region"       = { unstated = 1.0 }
+"weave.view_logs__service"        = { unstated = 1.0 }
+"weave.is_logs__service_0"        = { yes = 0.05 }
+"weave.words_logs__service_0_5"   = { unstated = 1.0 }
+"weave.view_logs__region"         = { unstated = 1.0 }
+"weave.view_hire__person"         = { unstated = 1.0 }
+"weave.is_hire__person_2"         = { yes = 0.05 }
+
+[answers."order maria a pro"]
+route                             = { order = 0.96, none = 0.04 }
+"order.person"                    = { maria = 0.91, unstated = 0.07, none = 0.02 }
+"order.model"                     = { pro = 1.0 }
+"weave.view_order__person"        = { none = 0.03, maria = 0.97 }
+"weave.is_order__person_0"        = { yes = 0.68 }
+"weave.view_order__model"         = { pro = 1.0 }
+"weave.is_order__model_1"         = { yes = 0.9 }
+"weave.does_order_0_0"            = { action = 1.0 }
+"errors.service"                  = { unstated = 1.0 }
+"errors.region"                   = { unstated = 1.0 }
+"logs.service"                    = { unstated = 1.0 }
+"logs.region"                     = { unstated = 1.0 }
+"hire.person"                     = { unstated = 1.0 }
+"weave.view_errors__service"      = { unstated = 1.0 }
+"weave.is_errors__service_0"      = { yes = 0.05 }
+"weave.words_errors__service_0_5" = { unstated = 1.0 }
+"weave.view_errors__region"       = { unstated = 1.0 }
+"weave.view_logs__service"        = { unstated = 1.0 }
+"weave.is_logs__service_0"        = { yes = 0.05 }
+"weave.words_logs__service_0_5"   = { unstated = 1.0 }
+"weave.view_logs__region"         = { unstated = 1.0 }
+"weave.view_hire__person"         = { unstated = 1.0 }
+"weave.is_hire__person_0"         = { yes = 0.05 }
+
+[answers."check the error rate of checkout"]
+route                        = { errors = 1.0 }
+"errors.service"             = { unstated = 0.01, checkout = 0.99 }
+"errors.region"              = { unstated = 1.0 }
+"logs.service"               = { unstated = 0.01, checkout = 0.99 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 0.97, none = 0.03 }
+"weave.view_errors__service" = { checkout = 1.0 }
+"weave.is_errors__service_0" = { yes = 0.84 }
+"weave.view_errors__region"  = { unstated = 0.9, none = 0.1 }
+"weave.view_logs__service"   = { checkout = 1.0 }
+"weave.is_logs__service_0"   = { yes = 0.84 }
+"weave.view_logs__region"    = { unstated = 0.93, none = 0.07 }
+"weave.view_hire__person"    = { unstated = 0.97, none = 0.03 }
+"weave.view_order__person"   = { unstated = 0.99, none = 0.01 }
+"weave.view_order__model"    = { unstated = 0.68, none = 0.32 }
+"weave.does_errors_0_3"      = { action = 0.99, result = 0.01 }
+"weave.against_2100990710"   = { other = 0.01, less = 0.07, whole = 0.92 }
+
+[answers."book a meeting room"]
+route                        = { none = 1.0 }
+"errors.service"             = { checkout = 0.04, unstated = 0.2, none = 0.76 }
+"errors.region"              = { unstated = 1.0 }
+"logs.service"               = { checkout = 0.05, unstated = 0.19, none = 0.76 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { none = 0.17, unstated = 0.83 }
+"weave.view_errors__service" = { checkout = 0.02, unstated = 0.2, none = 0.78 }
+"weave.view_errors__region"  = { none = 0.12, unstated = 0.88 }
+"weave.view_logs__service"   = { checkout = 0.02, unstated = 0.21, none = 0.77 }
+"weave.view_logs__region"    = { unstated = 0.89, none = 0.11 }
+"weave.view_hire__person"    = { unstated = 0.98, none = 0.02 }
+"weave.view_order__person"   = { unstated = 0.99, none = 0.01 }
+"weave.view_order__model"    = { unstated = 0.56, none = 0.44 }
+
+[answers."check the error rate of book a meeting room"]
+route                        = { errors = 1.0 }
+"errors.service"             = { checkout = 0.01, none = 0.89, unstated = 0.1 }
+"errors.region"              = { unstated = 1.0 }
+"weave.view_errors__service" = { none = 0.87, unstated = 0.13 }
+"weave.view_errors__region"  = { none = 0.13, unstated = 0.87 }
+"weave.does_errors_0_8"      = { action = 0.73, result = 0.01, "arg:service" = 0.26 }
+"weave.against_3192640871"   = { less = 0.21, whole = 0.73, other = 0.06 }
+"logs.service"               = { unstated = 1.0 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 1.0 }
+"weave.view_logs__service"   = { unstated = 1.0 }
+"weave.view_logs__region"    = { unstated = 1.0 }
+"weave.view_hire__person"    = { unstated = 1.0 }
+"weave.view_order__person"   = { unstated = 1.0 }
+"weave.view_order__model"    = { unstated = 1.0 }
+
+[answers."check the error rate of checkout and book a meeting room"]
+"weave.split_0"              = { yes = 0.93 }
+"weave.count"                = { two = 1.0 }
+"weave.part_37_56"           = { asks = 1.0 }
+"weave.span_37_56"           = { hire = 0.01, order = 0.02, none = 0.97 }
+route                        = { errors = 0.86, none = 0.14 }
+"errors.service"             = { none = 0.25, checkout = 0.7, unstated = 0.05 }
+"errors.region"              = { unstated = 1.0 }
+"logs.service"               = { none = 0.24, checkout = 0.7, unstated = 0.06 }
+"logs.region"                = { unstated = 1.0 }
+"hire.person"                = { unstated = 1.0 }
+"order.person"               = { unstated = 1.0 }
+"order.model"                = { unstated = 0.96, none = 0.04 }
+"weave.view_errors__service" = { none = 0.01, checkout = 0.99 }
+"weave.is_errors__service_0" = { yes = 0.43 }
+"weave.view_errors__region"  = { unstated = 0.92, none = 0.08 }
+"weave.view_logs__service"   = { checkout = 0.99, none = 0.01 }
+"weave.is_logs__service_0"   = { yes = 0.44 }
+"weave.view_logs__region"    = { unstated = 0.92, none = 0.08 }
+"weave.view_hire__person"    = { none = 0.02, unstated = 0.98 }
+"weave.view_order__person"   = { unstated = 0.99, none = 0.01 }
+"weave.view_order__model"    = { unstated = 0.6, none = 0.4 }
+"weave.does_errors_0_3"      = { action = 0.99, result = 0.01 }
+"weave.does_errors_7_10"     = { "arg:service" = 0.01, action = 0.04, more = 0.95 }

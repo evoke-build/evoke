@@ -141,6 +141,14 @@
           "one": 0.9,
           "two": 0.1
         }
+      },
+      "verified": {
+        "weave.again_31_41_timer__duration": {
+          "nothing": 0.9,
+          "also": 0.05,
+          "instead": 0.03,
+          "out": 0.02
+        }
       }
     }
   },

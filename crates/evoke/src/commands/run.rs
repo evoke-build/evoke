@@ -165,7 +165,7 @@ fn planned(command: &Command, file: &str, json: bool, environment: &Environment)
         Ok(replanned) => replanned,
         Err(problem) => return session.reporter.exit(&input, Exit::Human(problem)),
     };
-    let woven = Woven::replanned(replanned);
+    let woven = Woven::replanned(replanned, &pinned.answers);
     let mut rounds = Rounds {
         session,
         engine: Engine::Later,

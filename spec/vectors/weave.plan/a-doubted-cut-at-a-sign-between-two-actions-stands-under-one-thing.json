@@ -1,0 +1,662 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "error rate n logs for checkout",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "error rate"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "errors",
+            "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 10,
+                  "text": "error rate"
+                },
+                "does": "result",
+                "p": 0.89
+              }
+            ],
+            "unconsumed": [],
+            "whole": 0.88,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "logs for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "logs service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "logs"
+                },
+                "does": "result",
+                "p": 0.6868686868686869
+              }
+            ],
+            "whole": 0.41,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 1
+              },
+              {
+                "question": "logs.service",
+                "top": "checkout",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 1
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "error rate n logs for checkout",
+            "whole": true
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 17,
+                  "text": "error rate n logs"
+                },
+                "does": "result",
+                "p": 0.43
+              }
+            ],
+            "whole": 0.58,
+            "confidence": 0.81,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.81
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.81
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "logs",
+              "route": 0.18
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.81
+              },
+              {
+                "reflex": "logs",
+                "route": 0.18
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "error rate",
+            "only": "logs"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.01
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.99
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "logs for error rate",
+            "only": "logs"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.4
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.6
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "logs for checkout",
+            "only": "errors"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.01
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.99
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.36
+        },
+        "weave.count": {
+          "one": 0.89,
+          "two": 0.1,
+          "none": 0,
+          "more": 0.01
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "error rate n logs for checkout",
+        "steps": [
+          {
+            "n": 1,
+            "text": "error rate",
+            "end": 10,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 10,
+                    "text": "error rate"
+                  },
+                  "does": "result",
+                  "p": 0.89
+                }
+              ],
+              "whole": 0.88,
+              "confidence": 1,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 1
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 1
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 1
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"checkout\" · read · weakest: route 1.00",
+                "reason": "\"logs for checkout\" may add a detail this call does not hold",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "detail",
+                  "words": "logs for checkout"
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "shared": {
+              "service": {
+                "word": "checkout",
+                "via": "fill"
+              }
+            }
+          },
+          {
+            "n": 2,
+            "text": "logs for checkout",
+            "end": 30,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "logs service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 4,
+                    "text": "logs"
+                  },
+                  "does": "result",
+                  "p": 0.6868686868686869
+                }
+              ],
+              "whole": 0.41,
+              "confidence": 1,
+              "weakest": {
+                "question": "route",
+                "top": "logs",
+                "p": 1
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 1
+                },
+                {
+                  "question": "logs.service",
+                  "top": "checkout",
+                  "p": 1
+                }
+              ],
+              "runner_up": {
+                "reflex": "errors",
+                "route": 0
+              },
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 1
+                },
+                {
+                  "reflex": "errors",
+                  "route": 0
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ],
+              "prompt": {
+                "own": "logs service=\"checkout\" · read · weakest: route 1.00",
+                "reason": "\"error rate\" may add a detail this call does not hold",
+                "template": "Search the logs of checkout?"
+              },
+              "because": [
+                {
+                  "type": "detail",
+                  "words": "error rate"
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read"
+          }
+        ],
+        "stages": [
+          [
+            1,
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 10,
+            "end": 13,
+            "word": "n",
+            "order": "and",
+            "p": 0.36,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0.89
+        }
+      }
+    }
+  }
+}

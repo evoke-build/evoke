@@ -1,0 +1,866 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "roll back 4.12.0 and 4.11.3 on checkout",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "roll back 4.12.0"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "rollback",
+            "args": {
+              "release": {
+                "type": "pick",
+                "span": {
+                  "start": 10,
+                  "end": 16,
+                  "text": "4.12.0"
+                },
+                "value": {
+                  "type": "code",
+                  "value": "4.12.0"
+                }
+              }
+            },
+            "call": "rollback release=\"4.12.0\"",
+            "effect": "destructive",
+            "basis": {
+              "release": {
+                "by": "only",
+                "yes": 0.82
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "roll back"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "confidence": 0.82,
+            "weakest": {
+              "question": "weave.only_rollback__release_10_16",
+              "top": "yes",
+              "p": 0.82
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 1
+              },
+              {
+                "question": "weave.only_rollback__release_10_16",
+                "top": "yes",
+                "p": 0.82
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 1
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "rollback release=\"4.12.0\" · destructive · weakest: release 0.82",
+              "reason": "it cannot be undone, so it always waits for a yes",
+              "template": "Roll back 4.12.0?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "4.11.3 on checkout"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 0.43
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.25
+              },
+              {
+                "reflex": "suspect",
+                "route": 0.01
+              },
+              {
+                "reflex": "incident",
+                "route": 0.01
+              },
+              {
+                "reflex": "status",
+                "route": 0.01
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 0.43
+              },
+              {
+                "question": "rollback.service",
+                "top": "checkout",
+                "p": 0.98
+              },
+              {
+                "question": "rollback.release",
+                "top": "0-6",
+                "p": 0.86
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "4.11.3 on checkout",
+            "only": "rollback"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 0.2
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.8
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "roll back 4.11.3 on checkout",
+            "only": "rollback"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "rollback",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "release": {
+                "type": "pick",
+                "span": {
+                  "start": 10,
+                  "end": 16,
+                  "text": "4.11.3"
+                },
+                "value": {
+                  "type": "code",
+                  "value": "4.11.3"
+                }
+              }
+            },
+            "call": "rollback service=\"checkout\" release=\"4.11.3\"",
+            "effect": "destructive",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "release": {
+                "by": "only",
+                "yes": 0.81
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "roll back"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "confidence": 0.81,
+            "weakest": {
+              "question": "weave.only_rollback__release_10_16",
+              "top": "yes",
+              "p": 0.81
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 1
+              },
+              {
+                "question": "rollback.service",
+                "top": "checkout",
+                "p": 1
+              },
+              {
+                "question": "weave.only_rollback__release_10_16",
+                "top": "yes",
+                "p": 0.81
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 1
+              }
+            ],
+            "prompt": {
+              "own": "rollback service=\"checkout\" release=\"4.11.3\" · destructive · weakest: release 0.81",
+              "reason": "it cannot be undone, so it always waits for a yes",
+              "template": "Roll back 4.11.3?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "roll back 4.12.0 and 4.11.3 on checkout",
+            "whole": true
+          },
+          {
+            "outcome": "ask",
+            "reflex": "rollback",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 27,
+                  "text": "roll back 4.12.0 and 4.11.3"
+                },
+                "does": "action",
+                "p": 0.71
+              }
+            ],
+            "unconsumed": [
+              {
+                "start": 10,
+                "end": 16,
+                "text": "4.12.0"
+              },
+              {
+                "start": 21,
+                "end": 27,
+                "text": "4.11.3"
+              }
+            ],
+            "confidence": 0.99,
+            "weakest": {
+              "question": "rollback.service",
+              "top": "checkout",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 1
+              },
+              {
+                "question": "rollback.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 1
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "missing": [
+              {
+                "arg": "release",
+                "ask": "From which release?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "pick",
+                  "pick": "code"
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "roll back 4.12.0 on checkout",
+            "only": "rollback"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "rollback",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "release": {
+                "type": "pick",
+                "span": {
+                  "start": 10,
+                  "end": 16,
+                  "text": "4.12.0"
+                },
+                "value": {
+                  "type": "code",
+                  "value": "4.12.0"
+                }
+              }
+            },
+            "call": "rollback service=\"checkout\" release=\"4.12.0\"",
+            "effect": "destructive",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 0.99
+              },
+              "release": {
+                "by": "ask",
+                "p": 0.52
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "roll back"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "confidence": 0.52,
+            "weakest": {
+              "question": "rollback.release",
+              "top": "10-16",
+              "p": 0.52
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "rollback",
+                "p": 1
+              },
+              {
+                "question": "weave.view_rollback__service",
+                "top": "checkout",
+                "p": 0.99
+              },
+              {
+                "question": "rollback.release",
+                "top": "10-16",
+                "p": 0.52
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 1
+              }
+            ],
+            "prompt": {
+              "own": "rollback service=\"checkout\" release=\"4.12.0\" · destructive · weakest: release 0.52",
+              "reason": "it cannot be undone, so it always waits for a yes",
+              "template": "Roll back 4.12.0?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "roll back 4.11.3 on checkout",
+            "only": "rollback",
+            "named": {
+              "question": "weave.again_21_27_rollback__release",
+              "top": "rollback",
+              "p": 0.8
+            }
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "rollback",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "release": {
+                "type": "pick",
+                "span": {
+                  "start": 10,
+                  "end": 16,
+                  "text": "4.11.3"
+                },
+                "value": {
+                  "type": "code",
+                  "value": "4.11.3"
+                }
+              }
+            },
+            "call": "rollback service=\"checkout\" release=\"4.11.3\"",
+            "effect": "destructive",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 0.99
+              },
+              "release": {
+                "by": "only",
+                "yes": 0.81
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 9,
+                  "text": "roll back"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "confidence": 0.8,
+            "weakest": {
+              "question": "weave.again_21_27_rollback__release",
+              "top": "rollback",
+              "p": 0.8
+            },
+            "judgments": [
+              {
+                "question": "weave.again_21_27_rollback__release",
+                "top": "rollback",
+                "p": 0.8
+              },
+              {
+                "question": "rollback.service",
+                "top": "checkout",
+                "p": 0.99
+              },
+              {
+                "question": "weave.only_rollback__release_10_16",
+                "top": "yes",
+                "p": 0.81
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "rollback",
+                "route": 0.8
+              }
+            ],
+            "prompt": {
+              "own": "rollback service=\"checkout\" release=\"4.11.3\" · destructive · weakest: route 0.80",
+              "reason": "it cannot be undone, so it always waits for a yes",
+              "template": "Roll back 4.11.3?"
+            },
+            "because": [
+              {
+                "type": "destructive"
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.57
+        },
+        "weave.count": {
+          "one": 0.02,
+          "two": 0.98,
+          "more": 0,
+          "none": 0
+        }
+      },
+      "verified": {
+        "weave.again_21_27_rollback__release": {
+          "out": 0.01,
+          "instead": 0.04,
+          "also": 0.8,
+          "nothing": 0.15
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "roll back 4.12.0 and 4.11.3 on checkout",
+        "steps": [
+          {
+            "n": 1,
+            "text": "roll back 4.12.0 on checkout",
+            "end": 39,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "rollback",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "release": {
+                  "type": "pick",
+                  "span": {
+                    "start": 10,
+                    "end": 16,
+                    "text": "4.12.0"
+                  },
+                  "value": {
+                    "type": "code",
+                    "value": "4.12.0"
+                  }
+                }
+              },
+              "call": "rollback service=\"checkout\" release=\"4.12.0\"",
+              "effect": "destructive",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 0.99
+                },
+                "release": {
+                  "by": "ask",
+                  "p": 0.52
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 9,
+                    "text": "roll back"
+                  },
+                  "does": "action",
+                  "p": 1
+                }
+              ],
+              "confidence": 0.52,
+              "weakest": {
+                "question": "rollback.release",
+                "top": "10-16",
+                "p": 0.52
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "rollback",
+                  "p": 1
+                },
+                {
+                  "question": "weave.view_rollback__service",
+                  "top": "checkout",
+                  "p": 0.99
+                },
+                {
+                  "question": "rollback.release",
+                  "top": "10-16",
+                  "p": 0.52
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "rollback",
+                  "route": 1
+                }
+              ],
+              "prompt": {
+                "own": "rollback service=\"checkout\" release=\"4.12.0\" · destructive · weakest: release 0.52",
+                "reason": "it cannot be undone, so it always waits for a yes",
+                "template": "Roll back 4.12.0?"
+              },
+              "because": [
+                {
+                  "type": "destructive"
+                }
+              ]
+            },
+            "reflex": "rollback",
+            "effect": "destructive",
+            "repair": "apart",
+            "typed": "roll back 4.12.0 and 4.11.3 on checkout"
+          },
+          {
+            "n": 2,
+            "text": "roll back 4.11.3 on checkout",
+            "end": 39,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "rollback",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "release": {
+                  "type": "pick",
+                  "span": {
+                    "start": 10,
+                    "end": 16,
+                    "text": "4.11.3"
+                  },
+                  "value": {
+                    "type": "code",
+                    "value": "4.11.3"
+                  }
+                }
+              },
+              "call": "rollback service=\"checkout\" release=\"4.11.3\"",
+              "effect": "destructive",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.99,
+                  "reader": 0.99
+                },
+                "release": {
+                  "by": "only",
+                  "yes": 0.81
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 9,
+                    "text": "roll back"
+                  },
+                  "does": "action",
+                  "p": 1
+                }
+              ],
+              "confidence": 0.8,
+              "weakest": {
+                "question": "weave.again_21_27_rollback__release",
+                "top": "rollback",
+                "p": 0.8
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_21_27_rollback__release",
+                  "top": "rollback",
+                  "p": 0.8
+                },
+                {
+                  "question": "rollback.service",
+                  "top": "checkout",
+                  "p": 0.99
+                },
+                {
+                  "question": "weave.only_rollback__release_10_16",
+                  "top": "yes",
+                  "p": 0.81
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "rollback",
+                  "route": 0.8
+                }
+              ],
+              "prompt": {
+                "own": "rollback service=\"checkout\" release=\"4.11.3\" · destructive · weakest: route 0.80",
+                "reason": "it cannot be undone, so it always waits for a yes",
+                "template": "Roll back 4.11.3?"
+              },
+              "because": [
+                {
+                  "type": "destructive"
+                }
+              ]
+            },
+            "reflex": "rollback",
+            "effect": "destructive",
+            "repair": "again"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ],
+          [
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": true,
+        "splits": [
+          {
+            "start": 16,
+            "end": 21,
+            "word": "and",
+            "order": "and",
+            "p": 0.57
+          }
+        ],
+        "count": {
+          "one": 0.02
+        }
+      }
+    }
+  }
+}

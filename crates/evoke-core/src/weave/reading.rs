@@ -1370,10 +1370,12 @@ pub(crate) fn span(seg: &Segment, route: &Choice) -> Result<(QuestionId, Questio
     ))
 }
 
-/// Whether a question asks which reflex a part's words ask for, read in the whole request: its judgment stands for
-/// the route in a decision of the part's words.
-pub(crate) fn is_span(question: &QuestionId) -> bool {
-    matches!(question, QuestionId::Weave(name) if name.as_str().starts_with(SPAN))
+/// Whether a question's judgment stands for a step's route: which reflex a part's words ask for, read in the whole
+/// request, in a decision of the part's words; whether the request asks the same for another value of a step's
+/// argument as well, in the step written again for that value.
+pub(crate) fn stands_for_route(question: &QuestionId) -> bool {
+    matches!(question, QuestionId::Weave(name)
+        if name.as_str().starts_with(SPAN) || name.as_str().starts_with(AGAIN))
 }
 
 /// Whether a value one part states is another part's: `weave.share_<taker>_<giver>_<reflex>__<argument>`, the
@@ -1398,6 +1400,59 @@ pub(crate) fn shared(
             yes: Text::Plain(Clean::new(shown).map_err(|_| Unclean)?),
             no: Text::Plain(plain(no)),
         },
+    ))
+}
+
+/// What the request asks of another value of an argument a step's call holds, and its four answers: the same is
+/// asked for it as well; it is the answer in place of the one read; it is ruled out; it says something else. The
+/// words stand for `{words}`, the call read back for `{read}`, the argument's ask for `{ask}`, the value it holds
+/// for `{held}`.
+const AGAIN_ASK: &str = "The request is read as: {read} The request also says \u{ab}{words}\u{bb}. In the request, is \u{ab}{words}\u{bb} another answer to \u{ab}{ask}\u{bb}, asked for as well?";
+const AGAIN_ALSO: &str = "Yes: the same is asked for \u{ab}{words}\u{bb} as well.";
+const AGAIN_INSTEAD: &str =
+    "\u{ab}{words}\u{bb} is the answer in place of {held}: the reading took the wrong one.";
+const AGAIN_OUT: &str = "\u{ab}{words}\u{bb} is another answer, but the request rules it out.";
+const AGAIN_NOTHING: &str = "No: \u{ab}{words}\u{bb} says something else in the request.";
+/// The key of the answer that the same is asked for the other value as well.
+pub(crate) const ALSO: &str = "also";
+/// The kind of that question's name, before where the value's words stand.
+const AGAIN: &str = "again_";
+
+/// Whether the request asks the same for another value as well, of a step whose call holds its argument by other
+/// words or asks for it: `weave.again_<start>_<end>_<reflex>__<argument>`, by where the value's words stand in the
+/// request.
+pub(crate) fn again(
+    (read, ask, held): (&str, &str, &str),
+    words: &str,
+    (start, end): (usize, usize),
+    (reflex, arg): (&LocalName, &ArgName),
+) -> Result<(QuestionId, Question), Unclean> {
+    let fill = |text: &str| {
+        text.replace("{read}", read)
+            .replace("{ask}", ask)
+            .replace("{held}", held)
+            .replace("{words}", words)
+    };
+    let ask = Clean::new(&fill(AGAIN_ASK)).map_err(|_| Unclean)?;
+    let mut options = IndexMap::new();
+    for (answer, text) in [
+        (ALSO, AGAIN_ALSO),
+        ("instead", AGAIN_INSTEAD),
+        ("out", AGAIN_OUT),
+        ("nothing", AGAIN_NOTHING),
+    ] {
+        options.insert(
+            key(answer),
+            Text::Plain(Clean::new(&fill(text)).map_err(|_| Unclean)?),
+        );
+    }
+    let choice = Choice::new(ask, options, None).map_err(|_| Unclean)?;
+    Ok((
+        own(&format!(
+            "{AGAIN}{start}_{end}_{}",
+            crate::pins::pair(reflex, arg)
+        )),
+        Question::Choice(choice),
     ))
 }
 
@@ -1855,8 +1910,8 @@ mod tests {
         };
         let (id, question) = span(&seg, &route).unwrap();
         assert_eq!(id.to_string(), "weave.span_37_40");
-        assert!(is_span(&id));
-        assert!(!is_span(&part(&seg).unwrap().0));
+        assert!(stands_for_route(&id));
+        assert!(!stands_for_route(&part(&seg).unwrap().0));
         let Question::Choice(choice) = question else {
             panic!("a choice");
         };

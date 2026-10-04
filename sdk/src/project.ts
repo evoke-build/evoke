@@ -355,23 +355,35 @@ function key(asked: W.Asked): string {
   return JSON.stringify([asked.text, asked.tags ?? [], asked.only ?? null, asked.whole ?? false, asked.named ?? null])
 }
 
+/** The repairs whose steps the planner decided under one reflex alone. */
+const NARROWED = new Set<W.Repair | undefined>(["narrowed", "spliced", "named", "first", "again", "apart"])
+
 /** What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to its
- *  neighbour's reflex, or spliced into its words, or named by the whole request, was decided under that reflex alone,
- *  and so were words a shared word was written into, the route the whole request's where it gave it; any other step
- *  over the tags, whole when its words are the whole request. */
+ *  neighbour's reflex, or spliced into its words, or named by the whole request, a step read apart for its own value
+ *  or written again for another, was decided under that reflex alone, and so were words a shared word was written
+ *  into, the route the plan's where it gave it; any other step over the tags, whole when its words are the whole
+ *  request. */
 function askedFor(step: W.Step, tags: string[], input: string): W.Asked {
-  const narrowed = step.repair === "narrowed" || step.repair === "spliced" || step.repair === "named" || step.repair === "first" || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
+  const narrowed = NARROWED.has(step.repair) || Object.values(step.shared ?? {}).some(shared => shared.via === "rewrite")
   const own = narrowed ? step.reflex : undefined
   if (own !== undefined) return { text: step.text, only: own, ...namedRoute(step.decision) }
   return step.text === input.trim() ? { text: step.text, tags, whole: true } : { text: step.text, tags }
 }
 
-/** The judgment a step's route stands on where the whole request gave it, its words named — `weave.span_<start>_<end>`
- *  — as an `Asked` carries it; nothing where its own route was asked. */
+/** The judgment a step's route stands on where the plan gave it, as an `Asked` carries it: which reflex the step's
+ *  words ask for read in the whole request, or, for a step written again for another value, whether the request asks
+ *  the same for it as well; nothing where its own route was asked. */
 function namedRoute(decision: W.Decision): { named?: W.Judgment } {
   if (decision.outcome === "abstain") return {}
-  const judgment = (decision.judgments ?? []).find(judgment => judgment.question.startsWith("weave.span_"))
+  const judgment = (decision.judgments ?? []).find(judgment => standsForRoute(judgment.question))
   return judgment === undefined ? {} : { named: judgment }
+}
+
+/** Whether a question's judgment stands for a step's route, as the core reads it: `weave.span_<start>_<end>`, which
+ *  reflex a part's words ask for read in the whole request; `weave.again_<start>_<end>_<reflex>__<argument>`, whether
+ *  the request asks the same for another value of a step's argument as well. */
+function standsForRoute(question: W.QuestionId): boolean {
+  return question.startsWith("weave.span_") || question.startsWith("weave.again_")
 }
 
 /** One text read for the plan: its decision, and its answers as the plan file keeps them. */

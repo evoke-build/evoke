@@ -144,6 +144,10 @@ fn cause(chosen: &Chosen, because: &[Cap], cap: &Cap) -> String {
             line
         }
         Cap::Detail { words } => said(DETAIL, &[("words", &quoted(words))]),
+        Cap::Pointed { arg, words } => said(
+            READ_FROM,
+            &[("arg", arg.as_str()), ("words", &quoted(words))],
+        ),
         // The person's words last: nothing in them is read as a place to fill.
         Cap::Named { words, p } => said(
             NAMED,

@@ -992,6 +992,9 @@ export type Cap =
   /** Words of the request that match nothing alone, which the whole request, its words named, reads as the call's
    *  reflex at this share. */
   | { type: "named"; words: string; p: Prob }
+  /** A value read from words of the request that point at several things said before, `both`, which code alone read
+   *  as one of them: the argument, and those words as typed. */
+  | { type: "pointed"; arg: ArgName; words: string }
 
 /** The confirm prompt: `evoke`'s own line, why the call waits, then the manifest's template filled in. */
 export interface Prompt {
@@ -1057,8 +1060,9 @@ export interface Envelope {
 // ---- weave ----
 
 /** A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone; `whole` when the
- *  text is the whole request, which alone memory reaches; `named` when the whole request, the text's words named,
- *  gave the one reflex: its judgment stands for the route, which is then not asked. */
+ *  text is the whole request, which alone memory reaches; `named` when the plan gave the one reflex — the whole
+ *  request, the text's words named, or the answer that the same is asked for another value as well: its judgment
+ *  stands for the route, which is then not asked. */
 export interface Asked {
   text: string
   tags?: Tag[]
@@ -1075,8 +1079,9 @@ export type Need =
   | { type: "refer"; request: Request }
   | { type: "decide"; asked: Asked[] }
   /** Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches
-   *  nothing does, and whether a value one part states is another's. Every answer is kept beside those before
-   *  it. */
+   *  nothing does, which reflex its words ask for in the whole request, whether a value one part states is
+   *  another's, and whether the request asks the same for another value of a step's argument as well. Every answer
+   *  is kept beside those before it. */
   | { type: "verify"; request: Request }
 
 /** What a host gathered for the plan so far. */
@@ -1136,10 +1141,13 @@ export interface Ref {
 }
 
 /** How a step came to be that is not one part decided on its own: a segment that matched nothing settled narrowed to
- *  its neighbour's reflex, spliced into its words, or merged back; or a part the engine kept whole split, its parts each
- *  a reflex of their own; or a part that matched nothing alone decided narrowed to the reflex the whole request, its
- *  words named, gave it. */
-export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected" | "named" | "first" | "verb"
+ *  its neighbour's reflex, spliced into its words — a part that says the same for another value, and words that point
+ *  at values said before, once for each, are spliced too — or merged back; or a part the engine kept whole split, its
+ *  parts each a reflex of their own; or a part that matched nothing alone decided narrowed to the reflex the whole
+ *  request, its words named, gave it; or a step whose words hold other values the request asks the same for read
+ *  `apart`, from its words with its own value alone, its words as typed kept beside, and written `again` for each
+ *  other value, after it. */
+export type Repair = "narrowed" | "spliced" | "merged" | "split" | "corrected" | "named" | "first" | "verb" | "again" | "apart"
 
 /** A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument filled
  *  as a person's answer would fill it, or an optional one written into the step's words and decided again narrowed. */

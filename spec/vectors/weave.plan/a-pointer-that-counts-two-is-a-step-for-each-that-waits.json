@@ -1,0 +1,1147 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the errors for checkout and for payments, then pull the logs of both",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the errors for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.99
+              }
+            ],
+            "whole": 0.34,
+            "confidence": 0.99,
+            "weakest": {
+              "question": "errors.service",
+              "top": "checkout",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "for payments"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.08
+              },
+              {
+                "reflex": "post",
+                "route": 0.03
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0.01
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.86
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "pull the logs of both"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "logs",
+            "args": {},
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 21,
+                  "text": "pull the logs of both"
+                },
+                "does": "action",
+                "p": 0.72
+              }
+            ],
+            "unconsumed": [],
+            "whole": 0.02,
+            "confidence": 0.99,
+            "weakest": {
+              "question": "route",
+              "top": "logs",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 0.99
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 0.99
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "for payments",
+            "only": "errors"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.03
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.97
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for for payments",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "errors service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.99
+              }
+            ],
+            "whole": 0.45,
+            "confidence": 0.97,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.97
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.97
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 1
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.97
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for checkout and for payments"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "view",
+                "view": "reader",
+                "p": 0.8200000000000001,
+                "other": "unstated",
+                "words": {
+                  "start": 21,
+                  "end": 29,
+                  "text": "checkout"
+                },
+                "how": "same"
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.98
+              },
+              {
+                "words": {
+                  "start": 38,
+                  "end": 46,
+                  "text": "payments"
+                },
+                "does": "answers",
+                "arg": "service",
+                "p": 0.62
+              }
+            ],
+            "confidence": 0.8200000000000001,
+            "weakest": {
+              "question": "weave.view_errors__service",
+              "top": "checkout",
+              "p": 0.8200000000000001
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.99
+              },
+              {
+                "question": "weave.view_errors__service",
+                "top": "checkout",
+                "p": 0.8200000000000001
+              }
+            ],
+            "runner_up": {
+              "reflex": "logs",
+              "route": 0.01
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.99
+              },
+              {
+                "reflex": "logs",
+                "route": 0.01
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "errors service=\"checkout\" · read · weakest: service 0.82",
+              "reason": "service was read from \"checkout\"",
+              "template": "Show the error rate of checkout?"
+            },
+            "because": [
+              {
+                "type": "one_view",
+                "arg": "service"
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for checkout",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.99
+              }
+            ],
+            "whole": 0.4,
+            "confidence": 0.98,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.98
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.98
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.98
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for payments",
+            "only": "errors",
+            "named": {
+              "question": "weave.again_38_46_errors__service",
+              "top": "errors",
+              "p": 0.87
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "errors service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.98
+              }
+            ],
+            "whole": 0.4,
+            "confidence": 0.87,
+            "weakest": {
+              "question": "weave.again_38_46_errors__service",
+              "top": "errors",
+              "p": 0.87
+            },
+            "judgments": [
+              {
+                "question": "weave.again_38_46_errors__service",
+                "top": "errors",
+                "p": 0.87
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 1
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.87
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "pull the logs of checkout",
+            "only": "logs"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "logs service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "pull the logs"
+                },
+                "does": "action",
+                "p": 0.99
+              }
+            ],
+            "whole": 0.25,
+            "confidence": 0.99,
+            "weakest": {
+              "question": "logs.service",
+              "top": "checkout",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 1
+              },
+              {
+                "question": "logs.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 1
+              }
+            ],
+            "prompt": {
+              "own": "logs service=\"checkout\" · read · weakest: service 0.99",
+              "reason": "it holds all you said at 0.25, and a call runs at 0.30 or more",
+              "template": "Search the logs of checkout?"
+            },
+            "because": [
+              {
+                "type": "whole",
+                "p": 0.25,
+                "floor": 0.3
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "pull the logs of payments",
+            "only": "logs"
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "logs",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "logs service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 13,
+                  "text": "pull the logs"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "whole": 0.2,
+            "confidence": 0.99,
+            "weakest": {
+              "question": "logs.service",
+              "top": "payments",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "logs",
+                "p": 1
+              },
+              {
+                "question": "logs.service",
+                "top": "payments",
+                "p": 0.99
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "logs",
+                "route": 1
+              }
+            ],
+            "prompt": {
+              "own": "logs service=\"payments\" · read · weakest: service 0.99",
+              "reason": "it holds all you said at 0.20, and a call runs at 0.30 or more",
+              "template": "Search the logs of payments?"
+            },
+            "because": [
+              {
+                "type": "whole",
+                "p": 0.2,
+                "floor": 0.3
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.65
+        },
+        "weave.split_1": {
+          "yes": 0.91
+        },
+        "weave.count": {
+          "two": 0.56,
+          "more": 0.44,
+          "none": 0,
+          "one": 0
+        }
+      },
+      "verified": {
+        "weave.share_53_0_logs__service": {
+          "yes": 0.45
+        },
+        "weave.again_38_46_errors__service": {
+          "out": 0,
+          "instead": 0,
+          "also": 0.87,
+          "nothing": 0.13
+        }
+      },
+      "referred": {
+        "weave.ref_3_0": {
+          "step2": 0.12,
+          "step0": 0,
+          "step1": 0.88
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for checkout and for payments, then pull the logs of both",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for checkout",
+            "end": 46,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.99,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.99
+                }
+              ],
+              "whole": 0.4,
+              "confidence": 0.98,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.98
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.98
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.99
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.98
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "apart",
+            "typed": "check the errors for checkout and for payments"
+          },
+          {
+            "n": 2,
+            "text": "check the errors for payments",
+            "end": 46,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                }
+              },
+              "call": "errors service=\"payments\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.98
+                }
+              ],
+              "whole": 0.4,
+              "confidence": 0.87,
+              "weakest": {
+                "question": "weave.again_38_46_errors__service",
+                "top": "errors",
+                "p": 0.87
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_38_46_errors__service",
+                  "top": "errors",
+                  "p": 0.87
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 1
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.87
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "again"
+          },
+          {
+            "n": 3,
+            "text": "pull the logs of checkout",
+            "end": 74,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "logs service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.99,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "pull the logs"
+                  },
+                  "does": "action",
+                  "p": 0.99
+                }
+              ],
+              "whole": 0.25,
+              "confidence": 0.99,
+              "weakest": {
+                "question": "logs.service",
+                "top": "checkout",
+                "p": 0.99
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 1
+                },
+                {
+                  "question": "logs.service",
+                  "top": "checkout",
+                  "p": 0.99
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 1
+                }
+              ],
+              "prompt": {
+                "own": "logs service=\"checkout\" · read · weakest: service 0.99",
+                "reason": "it holds all you said at 0.25, and a call runs at 0.30 or more; service was read from \"both\"",
+                "template": "Search the logs of checkout?"
+              },
+              "because": [
+                {
+                  "type": "whole",
+                  "p": 0.25,
+                  "floor": 0.3
+                },
+                {
+                  "type": "pointed",
+                  "arg": "service",
+                  "words": "both"
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read",
+            "repair": "spliced",
+            "after": [
+              1,
+              2
+            ],
+            "typed": "pull the logs of both"
+          },
+          {
+            "n": 4,
+            "text": "pull the logs of payments",
+            "end": 74,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "logs",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                }
+              },
+              "call": "logs service=\"payments\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.99,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 13,
+                    "text": "pull the logs"
+                  },
+                  "does": "action",
+                  "p": 1
+                }
+              ],
+              "whole": 0.2,
+              "confidence": 0.99,
+              "weakest": {
+                "question": "logs.service",
+                "top": "payments",
+                "p": 0.99
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "logs",
+                  "p": 1
+                },
+                {
+                  "question": "logs.service",
+                  "top": "payments",
+                  "p": 0.99
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "logs",
+                  "route": 1
+                }
+              ],
+              "prompt": {
+                "own": "logs service=\"payments\" · read · weakest: service 0.99",
+                "reason": "it holds all you said at 0.20, and a call runs at 0.30 or more; service was read from \"both\"",
+                "template": "Search the logs of payments?"
+              },
+              "because": [
+                {
+                  "type": "whole",
+                  "p": 0.2,
+                  "floor": 0.3
+                },
+                {
+                  "type": "pointed",
+                  "arg": "service",
+                  "words": "both"
+                }
+              ]
+            },
+            "reflex": "logs",
+            "effect": "read",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 13,
+                  "text": "the logs"
+                },
+                "from": [
+                  1
+                ],
+                "how": "engine",
+                "weak": true,
+                "noun": "log",
+                "p": 0.88
+              }
+            ],
+            "repair": "spliced",
+            "after": [
+              1,
+              2
+            ]
+          }
+        ],
+        "stages": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.65
+          },
+          {
+            "start": 46,
+            "end": 53,
+            "word": "then",
+            "order": "then",
+            "p": 0.91,
+            "cut": true
+          }
+        ],
+        "count": {
+          "one": 0
+        }
+      }
+    }
+  }
+}

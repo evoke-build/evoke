@@ -69,35 +69,34 @@ impl Lookup {
         }
     }
 
-    fn of_text(text: &str) -> Self {
+    /// The lookup a text's words are, where they are one.
+    fn read(text: &str) -> Option<Self> {
         let words: Vec<&str> = text.split(' ').collect();
         let reflex = [Reflex::Errors, Reflex::Deploys, Reflex::Logs]
             .into_iter()
-            .find(|reflex| reflex.name() == words[0])
-            .unwrap_or_else(|| panic!("no lookup reads «{text}»"));
+            .find(|reflex| reflex.name() == words[0])?;
         let service = |word: &str| {
             [Service::Checkout, Service::Payments]
                 .into_iter()
                 .find(|service| service.word() == word)
-                .unwrap_or_else(|| panic!("no service reads «{word}»"))
         };
         match words.as_slice() {
-            [_] => Self {
+            [_] => Some(Self {
                 reflex,
                 service: None,
                 read: false,
-            },
-            [_, word] => Self {
+            }),
+            [_, word] => Some(Self {
                 reflex,
-                service: Some(service(word)),
+                service: Some(service(word)?),
                 read: true,
-            },
-            [_, "of", word] => Self {
+            }),
+            [_, "of", word] => Some(Self {
                 reflex,
-                service: Some(service(word)),
+                service: Some(service(word)?),
                 read: false,
-            },
-            _ => panic!("no lookup reads «{text}»"),
+            }),
+            _ => None,
         }
     }
 
@@ -256,10 +255,10 @@ fn request() -> impl Strategy<Value = Request> {
 }
 
 /// The request through the planner over the outage's plan: each lookup decided as the words say, a text narrowed
-/// to one reflex — a fan-out tried on a doubted part — matching nothing.
+/// to one reflex read so where its words are a lookup of that reflex, and matching nothing otherwise.
 fn planned(request: &Request) -> Weave {
     planned_under(&outage(), &request.text(), &request.judged, |text| {
-        Lookup::of_text(text).decision()
+        Lookup::read(text).map(Lookup::decision)
     })
 }
 

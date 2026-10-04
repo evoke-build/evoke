@@ -10,6 +10,7 @@ pub mod pinned;
 pub mod planning;
 pub mod reading;
 pub mod running;
+mod several;
 
 use indexmap::IndexMap;
 use serde::{Deserialize, Serialize};
@@ -24,8 +25,9 @@ pub use reading::{How, Order, Ref, Split, Where};
 
 /// A text for the foundation to decide: over the reflexes the tags allow, or one reflex alone. `whole` when the
 /// text is the whole request: the one segment of an unsplit draft, never a part, a rewrite or a playbook's filled
-/// sentence — the one text a host may hand the session's results to `request` for. `named` when the whole request,
-/// the text's words named, gave the one reflex: its judgment stands for the route, which `request` then leaves out.
+/// sentence — the one text a host may hand the session's results to `request` for. `named` when the plan gave the
+/// one reflex — the whole request, the text's words named, or the answer that the same is asked for another value as
+/// well: its judgment stands for the route, which `request` then leaves out.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Asked {
     pub text: String,
@@ -58,8 +60,10 @@ pub enum Need {
     Decide { asked: Vec<Asked> },
     /// Ask the adapter what the plan asks of the request once its parts are decided: what a part that matches
     /// nothing does, `weave.part_<start>_<end>`, and which reflex its words ask for in the whole request,
-    /// `weave.span_<start>_<end>`; and whether a value one part states is another's,
-    /// `weave.share_<taker>_<giver>_<reflex>__<argument>`. Every answer is kept beside those before it.
+    /// `weave.span_<start>_<end>`; whether a value one part states is another's,
+    /// `weave.share_<taker>_<giver>_<reflex>__<argument>`; and whether the request asks the same for another value
+    /// of a step's argument as well, `weave.again_<start>_<end>_<reflex>__<argument>`. Every answer is kept beside
+    /// those before it.
     Verify { request: Request },
 }
 
@@ -86,11 +90,15 @@ pub enum Planning {
 }
 
 /// How a step came to be that is not one part decided on its own: a segment that matched nothing was settled
-/// narrowed to its neighbour's reflex, spliced into its words, or merged back; a part the engine kept whole at a
-/// comma or an `and` was split, its parts each a reflex of their own; a part that says what not to do and names
-/// a value was read with the step beside it; a part that matched nothing alone was decided narrowed to the reflex
-/// the whole request, its words named, gave it; the first of two verbs before one object was decided again
-/// without the second, narrowed to its reflex, and the second verb alone, a step of its own after the first's.
+/// narrowed to its neighbour's reflex, spliced into its words — a part that says the same for another value, and
+/// words that point at values said before, once for each, are spliced too — or merged back; a part the engine
+/// kept whole at a comma or an `and` was split, its parts each a reflex of their own; a part that says what not to
+/// do and names a value was read with the step beside it; a part that matched nothing alone was decided narrowed
+/// to the reflex the whole request, its words named, gave it; the first of two verbs before one object was decided
+/// again without the second, narrowed to its reflex, and the second verb alone, a step of its own after the
+/// first's; a step whose words hold other values the request asks the same for was read apart, from its words
+/// with its own value alone, and written again, once for each other value, every such step decided narrowed to
+/// its reflex.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum Repair {
@@ -102,6 +110,12 @@ pub enum Repair {
     Named,
     First,
     Verb,
+    /// The step before it written again for another value the request asks the same for: its words with that
+    /// value in place, on the answer that it is asked for as well.
+    Again,
+    /// A step read again from its words with its own value alone, its words as typed kept beside: the other
+    /// values its words hold are the steps written again after it.
+    Apart,
 }
 
 /// A word of a vocabulary the request stated for several steps, as it reached one of them: a required argument
@@ -495,14 +509,22 @@ impl Weave {
     }
 
     /// What the planner asked to decide a step, as its repair and its shared words tell: a fragment narrowed to
-    /// its neighbour's reflex, or spliced into its words, or named by the whole request, was decided under that
-    /// reflex alone, and so were words a shared word was written into, the route the whole request's where it gave
-    /// it; any other step over the tags — whole when its words are the whole request.
+    /// its neighbour's reflex, or spliced into its words, or named by the whole request, a step read apart for its
+    /// own value or written again for another, was decided under that reflex alone, and so were words a shared word
+    /// was written into, the route the plan's where it gave it; any other step over the tags — whole when its words
+    /// are the whole request.
     #[must_use]
     pub fn asked_for(&self, step: &Step, tags: &[Tag]) -> Asked {
         let narrowed = matches!(
             step.repair,
-            Some(Repair::Narrowed | Repair::Spliced | Repair::Named | Repair::First)
+            Some(
+                Repair::Narrowed
+                    | Repair::Spliced
+                    | Repair::Named
+                    | Repair::First
+                    | Repair::Again
+                    | Repair::Apart
+            )
         ) || step
             .shared
             .values()
@@ -526,8 +548,10 @@ impl Weave {
     }
 }
 
-/// The judgment a decision's route stands on where the whole request gave it, the decided words named: which
-/// reflex they ask for read in the whole request, `weave.span_<start>_<end>`; none where its own route was asked.
+/// The judgment a decision's route stands on where the plan gave it: which reflex the decided words ask for read in
+/// the whole request, `weave.span_<start>_<end>`, or, for a step written again for another value, whether the
+/// request asks the same for it as well, `weave.again_<start>_<end>_<reflex>__<argument>`; none where its own route
+/// was asked.
 #[must_use]
 pub fn named(decision: &Decision) -> Option<&Judgment> {
     let judged = match decision {
@@ -538,7 +562,7 @@ pub fn named(decision: &Decision) -> Option<&Judgment> {
     judged
         .judgments()
         .iter()
-        .find(|judgment| reading::is_span(&judgment.question))
+        .find(|judgment| reading::stands_for_route(&judgment.question))
 }
 
 /// A value bound into a step at its turn: the argument it reached and the field it came from; a whole result

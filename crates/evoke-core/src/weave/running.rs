@@ -306,7 +306,8 @@ impl Runner<'_> {
 
     /// What the plan held a step for holds it at its turn: a decision made again there waits as the planner's
     /// did, for the part beside the step that may add a detail, for words that matched nothing alone and were
-    /// read with the whole request, and for the step's words that say it is wanted once more.
+    /// read with the whole request, for words that point at several things its value was read from, and for the
+    /// step's words that say it is wanted once more.
     fn held(&self, step: &Step, decision: Decision) -> Decision {
         let planned: Vec<Cap> = match &step.decision {
             Decision::Confirm { because, .. } => because.iter().cloned().collect(),
@@ -320,7 +321,12 @@ impl Runner<'_> {
         };
         let decision = planned
             .into_iter()
-            .filter(|cap| matches!(cap, Cap::Detail { .. } | Cap::Named { .. }) || again(cap))
+            .filter(|cap| {
+                matches!(
+                    cap,
+                    Cap::Detail { .. } | Cap::Named { .. } | Cap::Pointed { .. }
+                ) || again(cap)
+            })
             .fold(decision, |decision, cap| held(self.plan, decision, cap));
         // A day the plan read beside the day of a step this one takes from is read so at its turn too.
         dated_at(

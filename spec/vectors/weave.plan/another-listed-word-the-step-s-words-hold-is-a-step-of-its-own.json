@@ -1,0 +1,882 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the error rate on search in us-east and in eu-west",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the error rate on search in us-east"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "us-east"
+              }
+            },
+            "call": "errors service=\"search\" region=\"us-east\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "region": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.98
+              }
+            ],
+            "whole": 0.93,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 1
+              },
+              {
+                "question": "errors.region",
+                "top": "us-east",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "in eu-west"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "deploys",
+                "route": 0.02
+              },
+              {
+                "reflex": "errors",
+                "route": 0.01
+              },
+              {
+                "reflex": "logs",
+                "route": 0.01
+              },
+              {
+                "reflex": "rollback",
+                "route": 0.01
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "in eu-west",
+            "only": "errors"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.07
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.93
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate on in eu-west in us-east",
+            "only": "errors"
+          },
+          {
+            "outcome": "ask",
+            "reflex": "errors",
+            "args": {
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "basis": {
+              "region": {
+                "by": "view",
+                "view": "reader",
+                "p": 0.64,
+                "other": "unstated",
+                "words": {
+                  "start": 27,
+                  "end": 34,
+                  "text": "eu-west"
+                },
+                "how": "same"
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.98
+              },
+              {
+                "words": {
+                  "start": 38,
+                  "end": 45,
+                  "text": "us-east"
+                },
+                "does": "answers",
+                "arg": "region",
+                "p": 0.89
+              }
+            ],
+            "unconsumed": [],
+            "confidence": 0.64,
+            "weakest": {
+              "question": "weave.view_errors__region",
+              "top": "eu-west",
+              "p": 0.64
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "weave.view_errors__region",
+                "top": "eu-west",
+                "p": 0.64
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              }
+            ],
+            "missing": [
+              {
+                "arg": "service",
+                "ask": "Which service?",
+                "because": {
+                  "type": "unstated"
+                },
+                "choices": {
+                  "type": "vocab",
+                  "words": {
+                    "checkout": "The checkout service: cart and order confirmation.",
+                    "payments": "The payments service: card charges and refunds.",
+                    "search": "The search service: product search and suggestions."
+                  }
+                }
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate on search in in eu-west",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"search\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "region": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.98
+              }
+            ],
+            "whole": 0.91,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 1
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 1
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate on search in us-east and in eu-west",
+            "whole": true
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "us-east"
+              }
+            },
+            "call": "errors service=\"search\" region=\"us-east\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "region": {
+                "by": "views",
+                "ask": 0.53,
+                "reader": 0.86
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.98
+              },
+              {
+                "words": {
+                  "start": 49,
+                  "end": 56,
+                  "text": "eu-west"
+                },
+                "does": "answers",
+                "arg": "region",
+                "p": 1
+              }
+            ],
+            "confidence": 0.53,
+            "weakest": {
+              "question": "errors.region",
+              "top": "us-east",
+              "p": 0.53
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 1
+              },
+              {
+                "question": "errors.region",
+                "top": "us-east",
+                "p": 0.53
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "errors service=\"search\" region=\"us-east\" · read · weakest: region 0.53",
+              "reason": "a read runs at 0.80 or more",
+              "template": "Show the error rate of search?"
+            },
+            "because": [
+              {
+                "type": "under_floor",
+                "judgment": {
+                  "question": "errors.region",
+                  "top": "us-east",
+                  "p": 0.53
+                },
+                "floor": 0.8
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate on search in us-east",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "us-east"
+              }
+            },
+            "call": "errors service=\"search\" region=\"us-east\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "region": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.98
+              }
+            ],
+            "whole": 0.95,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 1
+              },
+              {
+                "question": "errors.region",
+                "top": "us-east",
+                "p": 1
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate on search in eu-west",
+            "only": "errors",
+            "named": {
+              "question": "weave.again_49_56_errors__region",
+              "top": "errors",
+              "p": 1
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"search\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              },
+              "region": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.97
+              }
+            ],
+            "whole": 0.92,
+            "confidence": 1,
+            "weakest": {
+              "question": "weave.again_49_56_errors__region",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "weave.again_49_56_errors__region",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 1
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 1
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.68
+        },
+        "weave.count": {
+          "one": 0.08,
+          "none": 0,
+          "more": 0,
+          "two": 0.92
+        }
+      },
+      "verified": {
+        "weave.again_49_56_errors__region": {
+          "nothing": 0,
+          "also": 1,
+          "instead": 0,
+          "out": 0
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the error rate on search in us-east and in eu-west",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the error rate on search in us-east",
+            "end": 56,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "us-east"
+                }
+              },
+              "call": "errors service=\"search\" region=\"us-east\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.98
+                }
+              ],
+              "whole": 0.95,
+              "confidence": 1,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 1
+                },
+                {
+                  "question": "errors.service",
+                  "top": "search",
+                  "p": 1
+                },
+                {
+                  "question": "errors.region",
+                  "top": "us-east",
+                  "p": 1
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 1
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "apart",
+            "typed": "check the error rate on search in us-east and in eu-west"
+          },
+          {
+            "n": 2,
+            "text": "check the error rate on search in eu-west",
+            "end": 56,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"search\" region=\"eu-west\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.97
+                }
+              ],
+              "whole": 0.92,
+              "confidence": 1,
+              "weakest": {
+                "question": "weave.again_49_56_errors__region",
+                "top": "errors",
+                "p": 1
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_49_56_errors__region",
+                  "top": "errors",
+                  "p": 1
+                },
+                {
+                  "question": "errors.service",
+                  "top": "search",
+                  "p": 1
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 1
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 1
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "again"
+          }
+        ],
+        "stages": [
+          [
+            1,
+            2
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 41,
+            "end": 46,
+            "word": "and",
+            "order": "and",
+            "p": 0.68
+          }
+        ],
+        "count": {
+          "one": 0.08
+        }
+      }
+    }
+  }
+}

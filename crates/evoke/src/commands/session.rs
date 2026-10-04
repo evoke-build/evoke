@@ -18,7 +18,7 @@ use evoke_core::needs::{self, Origin};
 use evoke_core::plan::{Held, Millis};
 use evoke_core::project::{Location, Locked, LockedAdapter, Setting};
 use evoke_core::text::NonEmpty;
-use evoke_core::weave::{self, Asked, Need, Step};
+use evoke_core::weave::{self, Asked, Need, Repair, Step};
 use evoke_core::{
     Answer, Chosen, Contained, Decision, Declared, Diagnostic, Document, Edit, Effective, File,
     Fix, Input, Installed, Item, Lesson, Lock, Manifest, Needs, Owned, Plan, Planning, Project,
@@ -137,9 +137,16 @@ pub struct Woven {
 }
 
 impl Woven {
-    /// A plan made again from a file: what the core decided from the file's answers, no adapter called.
+    /// A plan made again from a file: what the core decided from the file's answers, no adapter called; of what the
+    /// plan asked of the request, the answers its steps written again stand on, as the file keeps them.
     #[must_use]
-    pub fn replanned(replanned: Replanned) -> Self {
+    pub fn replanned(replanned: Replanned, answers: &[Answer]) -> Self {
+        let own: Vec<&Raw> = answers
+            .iter()
+            .filter(|answer| answer.text == replanned.weave.input)
+            .map(|answer| &answer.raw)
+            .collect();
+        let verified = again_among(&replanned.weave, &own);
         let decided = replanned
             .decided
             .into_iter()
@@ -161,7 +168,7 @@ impl Woven {
             rounds: 0,
             judged: None,
             referred: None,
-            verified: None,
+            verified,
         }
     }
 
@@ -193,6 +200,13 @@ impl Woven {
             decision: step.decision.clone(),
             ..decided.clone()
         })
+    }
+
+    /// What the plan asked of the request that its steps written again stand on (`again_among`).
+    #[must_use]
+    pub fn again(&self) -> Option<Raw> {
+        let verified: Vec<&Raw> = self.verified.iter().collect();
+        again_among(&self.weave, &verified)
     }
 
     /// The one decision a request read as: one step, and so nothing bound — what the foundation alone would have
@@ -233,6 +247,23 @@ impl Woven {
             .find(|(a, _)| *a == asked)
             .map(|(_, decided)| decided)
     }
+}
+
+/// For each step of a plan written again for another value, whether the request asks the same for its value as
+/// well: the answers among `raws`, the plan's own about the request, by the question's id; none where no step was.
+fn again_among(weave: &Weave, raws: &[&Raw]) -> Option<Raw> {
+    let again: IndexMap<String, IndexMap<String, f64>> = weave
+        .steps
+        .iter()
+        .filter(|step| step.repair == Some(Repair::Again))
+        .filter_map(|step| weave::named(&step.decision))
+        .filter_map(|judgment| {
+            let id = judgment.question.to_string();
+            let answer = raws.iter().find_map(|raw| raw.0.get(&id))?;
+            Some((id, answer.clone()))
+        })
+        .collect();
+    (!again.is_empty()).then_some(Raw(again))
 }
 
 /// The texts sent ahead of the cut, each decided on its own thread from the cut's round on.

@@ -10,13 +10,14 @@
 
 use super::reference::{abstain, decision, exclusive, gate, plan, stages, worst};
 use evoke_core::Decision;
+use evoke_core::decide::{Cap, held};
 use evoke_core::document::Json;
 use evoke_core::manifest::{Effect, Recognizer};
 use evoke_core::name::{ArgName, FieldName, LocalName};
 use evoke_core::weave::running::execute;
 use evoke_core::weave::{
-    Asked, Binding, Executed, Handled, Handling, Outcome, Progress, Returned, Running, Status,
-    Step, Todo, Verdict, Via, Weave, Why,
+    Asked, Binding, Executed, Handled, Handling, Outcome, Progress, Repair, Returned, Running,
+    Status, Step, Todo, Verdict, Via, Weave, Why,
 };
 use indexmap::IndexMap;
 use proptest::collection::vec;
@@ -69,6 +70,9 @@ struct Spec {
     effect: Effect,
     takes: Vec<Takes>,
     then: Vec<usize>,
+    /// Whether the planner wrote the step once for each value words before it named, its value read from words
+    /// that point at them: the plan holds it for a yes.
+    pointed: bool,
 }
 
 impl Spec {
@@ -92,6 +96,18 @@ impl Spec {
     /// Whether a value is written into the step's words, so its round is decided again first.
     fn rewritten(&self) -> bool {
         self.takes.iter().any(|takes| takes.via == Via::Rewrite)
+    }
+
+    /// The argument a value read from pointing words reaches: a step that holds or asks a value; none for a
+    /// lookup or a suspect.
+    fn pointed_arg(&self) -> Option<&'static str> {
+        match self.role {
+            Role::Contact => Some("name"),
+            Role::Mail => Some("to"),
+            Role::Timer => Some("duration"),
+            Role::Lights => Some("room"),
+            Role::Lookup | Role::Suspect => None,
+        }
     }
 }
 
@@ -484,6 +500,7 @@ fn model() -> impl Strategy<Value = Model> {
                         effect(),
                         any::<u8>(),
                         prop_oneof![1 => Just(1usize), 1 => Just(2), 2 => Just(3)],
+                        any::<bool>(),
                     ),
                     n,
                 ),
@@ -504,7 +521,7 @@ fn model() -> impl Strategy<Value = Model> {
                         })
                         .collect();
                     let mut specs: Vec<Spec> = Vec::new();
-                    for (i, (role, (pick, takes, each, then, effect, start, count))) in
+                    for (i, (role, (pick, takes, each, then, effect, start, count, pointed))) in
                         roles.iter().zip(choices).enumerate()
                     {
                         let drawn = Drawn {
@@ -528,12 +545,15 @@ fn model() -> impl Strategy<Value = Model> {
                             // A taker of a whole result never runs destructive: the plan makes it inactive.
                             Role::Suspect => effect.min(Effect::Write),
                         };
-                        specs.push(Spec {
+                        let mut spec = Spec {
                             role,
                             effect,
                             takes,
                             then,
-                        });
+                            pointed: false,
+                        };
+                        spec.pointed = pointed && spec.pointed_arg().is_some();
+                        specs.push(spec);
                     }
                     Model::new(specs)
                 })
@@ -659,7 +679,8 @@ fn name(text: &str) -> LocalName {
     LocalName::new(text).expect("a name")
 }
 
-/// The weave the specs describe, as the planner would have written it.
+/// The weave the specs describe, as the planner would have written it: a step written once for each value words
+/// before it named held for a yes that names those words.
 fn weave_of(model: &Model) -> Weave {
     let steps: Vec<Step> = model
         .specs
@@ -669,11 +690,21 @@ fn weave_of(model: &Model) -> Weave {
             n: i + 1,
             text: format!("{} ({})", spec.role.reflex(), i + 1),
             end: 0,
-            decision: decision(spec.role.reflex()),
+            decision: match spec.pointed_arg().filter(|_| spec.pointed) {
+                Some(arg) => held(
+                    &plan(),
+                    decision(spec.role.reflex()),
+                    Cap::Pointed {
+                        arg: ArgName::new(arg).expect("an argument name"),
+                        words: "both".to_owned(),
+                    },
+                ),
+                None => decision(spec.role.reflex()),
+            },
             reflex: Some(name(spec.role.reflex())),
             effect: Some(spec.effect),
             refs: Vec::new(),
-            repair: None,
+            repair: spec.pointed.then_some(Repair::Spliced),
             shared: IndexMap::new(),
             beside: IndexMap::new(),
             after: spec.after(),
@@ -723,6 +754,16 @@ fn weave_of(model: &Model) -> Weave {
             outcome: Outcome::Run,
             because: Vec::new(),
         },
+    }
+}
+
+/// Whether a decision waits for a yes that names words pointing at several values its value was read from.
+fn held_for_pointing(decision: &Decision) -> bool {
+    let pointed = |cap: &Cap| matches!(cap, Cap::Pointed { .. });
+    match decision {
+        Decision::Confirm { because, .. } => because.iter().any(pointed),
+        Decision::Ask { asking, .. } => asking.held.iter().any(pointed),
+        Decision::Run { .. } | Decision::Abstain { .. } => false,
     }
 }
 
@@ -939,6 +980,13 @@ impl Sut {
                 wholes.len(),
                 "a whole result rides no value on the line"
             );
+            // «What the plan held a step for holds it at its turn … for words that point at several things its
+            // value was read from»: decided again there or not, the round waits for a yes that names them.
+            assert!(
+                !spec.pointed || held_for_pointing(&handling.decision),
+                "step {}'s round waits for a yes that names the words it points with",
+                handling.step
+            );
         }
         if self.handed.len() > 1 {
             assert!(
@@ -1051,18 +1099,21 @@ fn a_cancel_reported_for_one_round_cancels_the_rounds_beside_it() {
             effect: Effect::Read,
             takes: Vec::new(),
             then: Vec::new(),
+            pointed: false,
         },
         Spec {
             role: Role::Contact,
             effect: Effect::Read,
             takes: Vec::new(),
             then: Vec::new(),
+            pointed: false,
         },
         Spec {
             role: Role::Contact,
             effect: Effect::Read,
             takes: Vec::new(),
             then: vec![1],
+            pointed: false,
         },
     ]);
     let mut sut = Sut::new(&model);
@@ -1121,18 +1172,21 @@ fn two_bindings_read_the_same_whatever_their_order() {
                 effect: Effect::Read,
                 takes: Vec::new(),
                 then: Vec::new(),
+                pointed: false,
             },
             Spec {
                 role: Role::Contact,
                 effect: Effect::Read,
                 takes: Vec::new(),
                 then: Vec::new(),
+                pointed: false,
             },
             Spec {
                 role: Role::Mail,
                 effect: Effect::Write,
                 takes: Vec::new(),
                 then: vec![1, 2],
+                pointed: false,
             },
         ]);
         model.stages = vec![vec![1], vec![2], vec![3]];
@@ -1173,7 +1227,7 @@ fn the_generator_reaches_every_shape() {
     use proptest::strategy::ValueTree;
     use proptest::test_runner::TestRunner;
     let mut runner = TestRunner::deterministic();
-    let mut seen = [0usize; 10];
+    let mut seen = [0usize; 12];
     for _ in 0..300 {
         let model = model().new_tree(&mut runner).expect("a plan").current();
         let specs = &model.specs;
@@ -1202,6 +1256,9 @@ fn the_generator_reaches_every_shape() {
                 .iter()
                 .any(|s| s.wholes().any(|t| specs[t.from - 1].role == Role::Suspect)),
         );
+        // A step written for a value words before it pointed at, and one decided again at its turn.
+        seen[10] += usize::from(specs.iter().any(|s| s.pointed));
+        seen[11] += usize::from(specs.iter().any(|s| s.pointed && s.rewritten()));
     }
     let names = [
         "a rewritten taker",
@@ -1214,6 +1271,8 @@ fn the_generator_reaches_every_shape() {
         "a taker over three",
         "a read taker after reads side by side",
         "a chain of takers",
+        "a step held for words that point",
+        "a step held for words that point, decided again",
     ];
     let drawn: Vec<String> = seen
         .iter()

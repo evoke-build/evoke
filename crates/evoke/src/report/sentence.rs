@@ -49,6 +49,18 @@ const NAMED: &str = "the whole request: alone it matches nothing";
 const FIRST: &str = "from its second verb, a thing of its own to do, which is the step after it";
 const VERB: &str =
     "a second thing to do before the object of the part before it, which it takes from";
+/// How a step's words were written for each value they name or point at, after the row's label.
+const OWN_VALUE: &str =
+    "for the one value it holds: each other value it names is a step of its own after it";
+const ONCE_EACH: &str = "once for each value said before it";
+
+/// Under a step written again for another value its words hold: what the request asks of that value, by each
+/// answer.
+const ANOTHER_VALUE: &str = "another value";
+const AS_WELL: &str = "asked for as well";
+const IN_PLACE: &str = "in place of the one read";
+const RULED_OUT: &str = "ruled out";
+const SOMETHING_ELSE: &str = "says something else";
 
 /// An answer's key as a person reads it: of the question about the reflex; of an argument, by what it takes.
 const NONE_OF_THEM: &str = "none of them";
@@ -110,8 +122,8 @@ const LEAST: f64 = 0.005;
 
 /// What was read of a sentence as a whole, logged once it has been handled, after its steps' lines: the sentence
 /// as typed, how many lines before this one are its own, how many things it asks and where it could be cut, what
-/// was folded, set aside or left out, why it was refused where it holds no step, the bars it was held to, and
-/// what the adapter was asked for it.
+/// was folded, set aside or left out, why it was refused where it holds no step, what each step written again for
+/// another value stands on, the bars it was held to, and what the adapter was asked for it.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Sentence {
     #[serde(rename = "sentence")]
@@ -129,6 +141,10 @@ pub struct Sentence {
     pub excluded: Vec<String>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub because: Vec<Because>,
+    /// What the plan asked of the request that its steps written again stand on: whether the request asks the same
+    /// for each one's value as well, the answers by the question's id.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub again: Option<Raw>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub gate: Option<Gate>,
     pub asked: Asked,
@@ -200,6 +216,7 @@ impl Sentence {
             } else {
                 Vec::new()
             },
+            again: woven.again(),
             gate: gate.copied(),
             asked: Asked::default(),
             packs: ShownPack::of(&weave.input),
@@ -426,10 +443,16 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
             })
             .collect();
         if count.as_one && !sentence.splits.is_empty() {
+            // One thing asked for several values is still no cut: a step for each value.
+            let read = if steps > 1 {
+                "each value asked for is a step"
+            } else {
+                "read as one step"
+            };
             rows.push(row(
                 SEVERAL,
                 Text::from(format!(
-                    "one thing {}: read as one step, and no cut is made",
+                    "one thing {}: {read}, and no cut is made",
                     share(count.one.get())
                 )),
             ));
@@ -485,8 +508,9 @@ fn whole(sentence: &Sentence, steps: usize) -> Vec<Text> {
     rows
 }
 
-/// One step's rows: the reflex — as the whole request gave it, where its words were named there — each value, how
-/// far the call holds all that was said, what a rule did, then what became of the call and why.
+/// One step's rows: the reflex — as the plan gave it, where its words were named in the whole request or it was
+/// written again for another value — each value, how far the call holds all that was said, what a rule did, then
+/// what became of the call and why.
 fn step(sentence: Option<&Sentence>, line: &Line, tried: bool) -> Vec<Text> {
     let mut rows = Vec::new();
     let mut route = sorted(&line.answers, "route");
@@ -943,19 +967,7 @@ fn rules(sentence: Option<&Sentence>, line: &Line) -> Vec<Text> {
         }
         rows.push(row(label, body));
     }
-    if let Some(repair) = line.repair {
-        let (label, says) = match repair {
-            Repair::Narrowed => (READ_WITH, NARROWED),
-            Repair::Spliced => (READ_WITH, SPLICED),
-            Repair::Merged => (READ_WITH, MERGED),
-            Repair::Corrected => (READ_WITH, CORRECTED),
-            Repair::Split => (READ_APART, SPLIT),
-            Repair::Named => (READ_WITH, NAMED),
-            Repair::First => (READ_APART, FIRST),
-            Repair::Verb => (READ_APART, VERB),
-        };
-        rows.push(row(label, Text::from(says)));
-    }
+    rows.extend(settled(sentence, line));
     if let Some(step) = &line.step {
         for from in &step.from {
             rows.push(row(
@@ -995,6 +1007,78 @@ fn rules(sentence: Option<&Sentence>, line: &Line) -> Vec<Text> {
         }
     }
     rows
+}
+
+/// How a rule settled the step's words, by its repair, where one did: a step written again for another value its
+/// words hold, which the request asks for as well, with every answer about it; the step read apart for its own
+/// value; words that point at several values said before, spliced once for each; else the repair's line.
+fn settled(sentence: Option<&Sentence>, line: &Line) -> Option<Text> {
+    let repair = line.repair?;
+    if repair == Repair::Spliced
+        && let Some(words) = pointed(&line.decision)
+    {
+        return Some(row(
+            READ_APART,
+            Text::from(format!("{} {ONCE_EACH}", said(words))),
+        ));
+    }
+    let (label, says) = match repair {
+        Repair::Again => {
+            let judgment = weave::named(&line.decision)?;
+            return Some(row(ANOTHER_VALUE, asked_again(sentence, judgment)));
+        }
+        Repair::Apart => (READ_APART, OWN_VALUE),
+        Repair::Narrowed => (READ_WITH, NARROWED),
+        Repair::Spliced => (READ_WITH, SPLICED),
+        Repair::Merged => (READ_WITH, MERGED),
+        Repair::Corrected => (READ_WITH, CORRECTED),
+        Repair::Split => (READ_APART, SPLIT),
+        Repair::Named => (READ_WITH, NAMED),
+        Repair::First => (READ_APART, FIRST),
+        Repair::Verb => (READ_APART, VERB),
+    };
+    Some(row(label, Text::from(says)))
+}
+
+/// The words a step's value was read from where they point at several values said before, «both».
+fn pointed(decision: &Decision) -> Option<&str> {
+    let held: Vec<&Cap> = match decision {
+        Decision::Confirm { because, .. } => because.iter().collect(),
+        Decision::Ask { asking, .. } => asking.held.iter().collect(),
+        Decision::Run { .. } | Decision::Abstain { .. } => Vec::new(),
+    };
+    held.into_iter().find_map(|cap| match cap {
+        Cap::Pointed { words, .. } => Some(words.as_str()),
+        _ => None,
+    })
+}
+
+/// What the request asks of the value a step was written again for: every answer, most probable first; the share
+/// the step stands on alone where the sentence's line does not hold them.
+fn asked_again(sentence: Option<&Sentence>, judgment: &Judgment) -> Text {
+    let id = judgment.question.to_string();
+    let mut answered: Vec<(&str, f64)> = sentence
+        .and_then(|sentence| sentence.again.as_ref())
+        .and_then(|again| again.0.get(&id))
+        .map_or_else(
+            || vec![("also", judgment.p.get())],
+            |answer| answer.iter().map(|(key, p)| (key.as_str(), *p)).collect(),
+        );
+    answered.sort_by(|a, b| b.1.total_cmp(&a.1));
+    let shown: Vec<String> = answered
+        .iter()
+        .map(|(key, p)| {
+            let answer = match *key {
+                "also" => AS_WELL,
+                "instead" => IN_PLACE,
+                "out" => RULED_OUT,
+                "nothing" => SOMETHING_ELSE,
+                other => other,
+            };
+            format!("{answer} {}", share(*p))
+        })
+        .collect();
+    Text::from(shown.join(" · "))
 }
 
 /// What became of the call, or what would: the word, the call as the plan printed it, and under it why.

@@ -1,0 +1,346 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "compare the errors of checkout in eu-west with payments",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "compare the errors of checkout in eu-west with payments",
+            "whole": true
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              },
+              "region": {
+                "type": "word",
+                "word": "eu-west"
+              }
+            },
+            "call": "errors service=\"checkout\" region=\"eu-west\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "view",
+                "view": "reader",
+                "p": 0.8300000000000001,
+                "other": "unstated",
+                "words": {
+                  "start": 22,
+                  "end": 30,
+                  "text": "checkout"
+                },
+                "how": "same"
+              },
+              "region": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 18,
+                  "text": "compare the errors"
+                },
+                "does": "action",
+                "p": 0.7
+              },
+              {
+                "words": {
+                  "start": 47,
+                  "end": 55,
+                  "text": "payments"
+                },
+                "does": "more",
+                "p": 0.5
+              }
+            ],
+            "confidence": 0.8300000000000001,
+            "weakest": {
+              "question": "weave.view_errors__service",
+              "top": "checkout",
+              "p": 0.8300000000000001
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.99
+              },
+              {
+                "question": "weave.view_errors__service",
+                "top": "checkout",
+                "p": 0.8300000000000001
+              },
+              {
+                "question": "errors.region",
+                "top": "eu-west",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.99
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "errors service=\"checkout\" region=\"eu-west\" · read · weakest: service 0.83",
+              "reason": "service was read from \"checkout\"; \"payments\" asks for another thing",
+              "template": "Show the error rate of checkout?"
+            },
+            "because": [
+              {
+                "type": "one_view",
+                "arg": "service"
+              },
+              {
+                "type": "more",
+                "words": {
+                  "start": 47,
+                  "end": 55,
+                  "text": "payments"
+                }
+              }
+            ]
+          }
+        ]
+      ],
+      "verified": {
+        "weave.again_47_55_errors__service": {
+          "nothing": 0.11,
+          "out": 0,
+          "instead": 0,
+          "also": 0.89
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "compare the errors of checkout in eu-west with payments",
+        "steps": [
+          {
+            "n": 1,
+            "text": "compare the errors of checkout in eu-west with payments",
+            "end": 55,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                },
+                "region": {
+                  "type": "word",
+                  "word": "eu-west"
+                }
+              },
+              "call": "errors service=\"checkout\" region=\"eu-west\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "view",
+                  "view": "reader",
+                  "p": 0.8300000000000001,
+                  "other": "unstated",
+                  "words": {
+                    "start": 22,
+                    "end": 30,
+                    "text": "checkout"
+                  },
+                  "how": "same"
+                },
+                "region": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 18,
+                    "text": "compare the errors"
+                  },
+                  "does": "action",
+                  "p": 0.7
+                },
+                {
+                  "words": {
+                    "start": 47,
+                    "end": 55,
+                    "text": "payments"
+                  },
+                  "does": "more",
+                  "p": 0.5
+                }
+              ],
+              "confidence": 0.8300000000000001,
+              "weakest": {
+                "question": "weave.view_errors__service",
+                "top": "checkout",
+                "p": 0.8300000000000001
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.99
+                },
+                {
+                  "question": "weave.view_errors__service",
+                  "top": "checkout",
+                  "p": 0.8300000000000001
+                },
+                {
+                  "question": "errors.region",
+                  "top": "eu-west",
+                  "p": 1
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.99
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"checkout\" region=\"eu-west\" · read · weakest: service 0.83",
+                "reason": "service was read from \"checkout\"; \"payments\" asks for another thing",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "one_view",
+                  "arg": "service"
+                },
+                {
+                  "type": "more",
+                  "words": {
+                    "start": 47,
+                    "end": 55,
+                    "text": "payments"
+                  }
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false
+      }
+    }
+  }
+}

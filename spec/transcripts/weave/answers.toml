@@ -753,6 +753,7 @@ route                                 = { none = 0.95, lights = 0.05 }
 "weave.only_lights__brightness_61_64" = { yes = 0.05 }
 "weave.only_volume__level_61_64"      = { yes = 0.05 }
 "weave.view_contact__name"            = { unstated = 1.0 }
+"weave.span_50_71"                    = { none = 0.9, lights = 0.1 }
 
 [answers."the lights in the den"]
 route                      = { lights = 0.9, timer = 0.02, volume = 0.02, none = 0.06 }

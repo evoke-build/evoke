@@ -638,6 +638,133 @@
               }
             ]
           }
+        ],
+        [
+          {
+            "text": "check the errors for checkout",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for payments",
+            "only": "errors",
+            "named": {
+              "question": "weave.again_38_46_errors__service",
+              "top": "errors",
+              "p": 0.95
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "errors service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "weave.again_38_46_errors__service",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "weave.again_38_46_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              }
+            ]
+          }
         ]
       ],
       "judged": {
@@ -662,12 +789,22 @@
       "verified": {
         "weave.share_0_48_errors__service": {
           "yes": 0.05
+        },
+        "weave.again_38_46_errors__service": {
+          "also": 0.95,
+          "instead": 0.02,
+          "out": 0.01,
+          "nothing": 0.02
         }
       },
       "referred": {
         "weave.ref_2_0": {
           "step0": 0.6,
           "step1": 0.4
+        },
+        "weave.ref_3_0": {
+          "step0": 0.6,
+          "step2": 0.4
         }
       }
     }
@@ -680,12 +817,26 @@
         "steps": [
           {
             "n": 1,
-            "text": "check the errors for checkout and for payments",
+            "text": "check the errors for checkout",
             "end": 46,
             "decision": {
-              "outcome": "ask",
+              "outcome": "run",
               "reflex": "errors",
-              "args": {},
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
               "left": [
                 {
                   "words": {
@@ -695,27 +846,8 @@
                   },
                   "does": "action",
                   "p": 0.95
-                },
-                {
-                  "words": {
-                    "start": 21,
-                    "end": 29,
-                    "text": "checkout"
-                  },
-                  "does": "action",
-                  "p": 0.95
-                },
-                {
-                  "words": {
-                    "start": 38,
-                    "end": 46,
-                    "text": "payments"
-                  },
-                  "does": "action",
-                  "p": 0.95
                 }
               ],
-              "unconsumed": [],
               "whole": 0.9,
               "confidence": 0.95,
               "weakest": {
@@ -728,84 +860,90 @@
                   "question": "route",
                   "top": "errors",
                   "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.95
                 }
               ],
-              "runner_up": {
-                "reflex": "deploys",
-                "route": 0.02
-              },
               "contenders": [
                 {
                   "reflex": "errors",
                   "route": 0.95
-                },
-                {
-                  "reflex": "deploys",
-                  "route": 0.02
-                },
-                {
-                  "reflex": "logs",
-                  "route": 0
-                },
-                {
-                  "reflex": "suspect",
-                  "route": 0
-                },
-                {
-                  "reflex": "rollback",
-                  "route": 0
-                },
-                {
-                  "reflex": "post",
-                  "route": 0
-                },
-                {
-                  "reflex": "incidents",
-                  "route": 0
-                },
-                {
-                  "reflex": "incident",
-                  "route": 0
-                },
-                {
-                  "reflex": "postmortem",
-                  "route": 0
-                },
-                {
-                  "reflex": "status",
-                  "route": 0
-                }
-              ],
-              "missing": [
-                {
-                  "arg": "service",
-                  "ask": "Which service?",
-                  "because": {
-                    "type": "unstated"
-                  },
-                  "words": {
-                    "start": 21,
-                    "end": 29,
-                    "text": "checkout"
-                  },
-                  "choices": {
-                    "type": "vocab",
-                    "words": {
-                      "checkout": "The checkout service: cart and order confirmation.",
-                      "payments": "The payments service: card charges and refunds.",
-                      "search": "The search service: product search and suggestions."
-                    }
-                  },
-                  "likely": "checkout"
                 }
               ]
             },
             "reflex": "errors",
             "effect": "read",
-            "repair": "merged"
+            "repair": "apart",
+            "typed": "check the errors for checkout and for payments"
           },
           {
             "n": 2,
+            "text": "check the errors for payments",
+            "end": 46,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                }
+              },
+              "call": "errors service=\"payments\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "weave.again_38_46_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_38_46_errors__service",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "again"
+          },
+          {
+            "n": 3,
             "text": "list the checkout deploys",
             "end": 73,
             "decision": {
@@ -924,14 +1062,15 @@
                 "from": [
                   0
                 ],
-                "how": "phrase",
+                "how": "engine",
                 "weak": true,
-                "noun": "checkout"
+                "noun": "checkout",
+                "p": 0.6
               }
             ]
           },
           {
-            "n": 3,
+            "n": 4,
             "text": "pull the checkout logs",
             "end": 97,
             "decision": {
@@ -1058,7 +1197,7 @@
             ]
           },
           {
-            "n": 4,
+            "n": 5,
             "text": "find the suspect",
             "end": 120,
             "decision": {
@@ -1144,28 +1283,22 @@
             "after": [
               1,
               2,
-              3
+              3,
+              4
             ]
           }
         ],
         "binds": [
           {
-            "from": 1,
-            "to": 4,
-            "arg": "errors",
-            "field": "errors",
-            "via": "takes"
-          },
-          {
-            "from": 2,
-            "to": 4,
+            "from": 3,
+            "to": 5,
             "arg": "deploys",
             "field": "deploys",
             "via": "takes"
           },
           {
-            "from": 3,
-            "to": 4,
+            "from": 4,
+            "to": 5,
             "arg": "logs",
             "field": "logs",
             "via": "takes"
@@ -1175,19 +1308,24 @@
           [
             1,
             2,
-            3
+            3,
+            4
           ],
           [
-            4
+            5
           ]
         ],
         "verdict": {
-          "outcome": "ask",
+          "outcome": "refuse",
           "because": [
             {
-              "type": "needs",
-              "step": 1,
-              "arg": "service"
+              "type": "several_sources",
+              "step": 5,
+              "name": "errors",
+              "sources": [
+                1,
+                2
+              ]
             }
           ]
         },

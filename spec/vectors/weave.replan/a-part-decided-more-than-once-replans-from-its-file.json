@@ -1,41 +1,32 @@
 {
   "input": {
-    "path": "~/errors.plan.json",
+    "path": "~/payments.plan.json",
     "pinned": {
       "note": "Written by evoke try --save: the sentence and the classifier's answers, in clear. evoke run runs it exactly, or says which pin moved.",
       "plan": 1,
-      "input": "Check the error rate for payments in EU West, then the same for US East.",
+      "input": "check the errors for checkout and post in #incident, payments too",
       "weave": {
-        "input": "Check the error rate for payments in EU West, then the same for US East.",
+        "input": "check the errors for checkout and post in #incident, payments too",
         "steps": [
           {
             "n": 1,
-            "text": "Check the error rate for payments in EU West",
-            "end": 44,
+            "text": "check the errors for checkout",
+            "end": 29,
             "decision": {
               "outcome": "run",
               "reflex": "errors",
               "args": {
                 "service": {
                   "type": "word",
-                  "word": "payments"
-                },
-                "region": {
-                  "type": "word",
-                  "word": "eu-west"
+                  "word": "checkout"
                 }
               },
-              "call": "errors service=\"payments\" region=\"eu-west\"",
+              "call": "errors service=\"checkout\"",
               "effect": "read",
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 1,
-                  "reader": 1
-                },
-                "region": {
-                  "by": "views",
-                  "ask": 1,
+                  "ask": 0.99,
                   "reader": 1
                 }
               },
@@ -43,19 +34,19 @@
                 {
                   "words": {
                     "start": 0,
-                    "end": 20,
-                    "text": "Check the error rate"
+                    "end": 16,
+                    "text": "check the errors"
                   },
                   "does": "action",
-                  "p": 0.98
+                  "p": 0.99
                 }
               ],
-              "whole": 0.93,
-              "confidence": 1,
+              "whole": 0.35,
+              "confidence": 0.99,
               "weakest": {
-                "question": "route",
-                "top": "errors",
-                "p": 1
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
               },
               "judgments": [
                 {
@@ -65,13 +56,8 @@
                 },
                 {
                   "question": "errors.service",
-                  "top": "payments",
-                  "p": 1
-                },
-                {
-                  "question": "errors.region",
-                  "top": "eu-west",
-                  "p": 1
+                  "top": "checkout",
+                  "p": 0.99
                 }
               ],
               "runner_up": {
@@ -130,117 +116,140 @@
           },
           {
             "n": 2,
-            "text": "the same for US East.",
-            "end": 72,
+            "text": "post in #incident, payments too",
+            "end": 65,
             "decision": {
               "outcome": "confirm",
-              "reflex": "errors",
+              "reflex": "post",
               "args": {
-                "service": {
+                "channel": {
                   "type": "word",
-                  "word": "payments"
-                },
-                "region": {
-                  "type": "word",
-                  "word": "us-east"
+                  "word": "#incident"
                 }
               },
-              "call": "errors service=\"payments\" region=\"us-east\"",
-              "effect": "read",
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
               "basis": {
-                "region": {
+                "channel": {
                   "by": "views",
-                  "ask": 1,
-                  "reader": 0.99
-                },
-                "service": {
-                  "by": "views",
-                  "ask": 1,
+                  "ask": 0.98,
                   "reader": 1
                 }
               },
               "left": [
                 {
                   "words": {
-                    "start": 4,
-                    "end": 8,
-                    "text": "same"
+                    "start": 0,
+                    "end": 4,
+                    "text": "post"
                   },
-                  "does": "result",
-                  "p": 0.5,
+                  "does": "action",
+                  "p": 1
+                },
+                {
+                  "words": {
+                    "start": 19,
+                    "end": 31,
+                    "text": "payments too"
+                  },
+                  "does": "more",
+                  "p": 0.96,
                   "again": true
                 }
               ],
-              "whole": 0.46,
-              "confidence": 0.99,
+              "whole": 0.06,
+              "confidence": 0.98,
               "weakest": {
-                "question": "weave.view_errors__region",
-                "top": "us-east",
-                "p": 0.99
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.98
               },
               "judgments": [
                 {
-                  "question": "weave.span_51_72",
-                  "top": "errors",
-                  "p": 1
-                },
-                {
-                  "question": "weave.view_errors__region",
-                  "top": "us-east",
+                  "question": "route",
+                  "top": "post",
                   "p": 0.99
                 },
                 {
-                  "question": "errors.service",
-                  "top": "payments",
-                  "p": 1
+                  "question": "post.channel",
+                  "top": "#incident",
+                  "p": 0.98
                 }
               ],
+              "runner_up": {
+                "reflex": "outage",
+                "route": 0.01
+              },
               "contenders": [
                 {
+                  "reflex": "post",
+                  "route": 0.99
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0.01
+                },
+                {
                   "reflex": "errors",
-                  "route": 1
+                  "route": 0
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
                 }
               ],
               "prompt": {
-                "own": "errors service=\"payments\" region=\"us-east\" · read · weakest: region 0.99",
-                "reason": "\"the same for US East.\" matches nothing alone, and the whole request reads it as errors at 1.00, which always waits for a yes",
-                "template": "Show the error rate of payments?"
+                "own": "post channel=\"#incident\" · write · weakest: channel 0.98",
+                "reason": "\"payments too\" asks for another thing; it holds all you said at 0.06, and a call runs at 0.30 or more; it leaves out \"payments too\"",
+                "template": "Post to #incident?"
               },
               "because": [
                 {
-                  "type": "named",
-                  "words": "the same for US East.",
-                  "p": 1
+                  "type": "more",
+                  "words": {
+                    "start": 19,
+                    "end": 31,
+                    "text": "payments too"
+                  }
+                },
+                {
+                  "type": "whole",
+                  "p": 0.06,
+                  "floor": 0.3
                 }
               ]
             },
-            "reflex": "errors",
-            "effect": "read",
-            "refs": [
-              {
-                "span": {
-                  "start": 0,
-                  "end": 12,
-                  "text": "the same for"
-                },
-                "from": [
-                  0
-                ],
-                "how": "phrase",
-                "weak": true,
-                "noun": "for"
-              }
-            ],
-            "repair": "named",
-            "shared": {
-              "service": {
-                "word": "payments",
-                "via": "fill"
-              }
-            },
-            "after": [
-              1
-            ]
+            "reflex": "post",
+            "effect": "write",
+            "repair": "merged"
           }
         ],
         "stages": [
@@ -254,25 +263,32 @@
         "verdict": {
           "outcome": "run"
         },
-        "exclusive": false,
+        "exclusive": true,
         "splits": [
           {
-            "start": 44,
-            "end": 51,
-            "word": "then",
-            "order": "then",
-            "p": 0.93,
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.62,
             "cut": true
+          },
+          {
+            "start": 51,
+            "end": 53,
+            "word": ",",
+            "order": "and",
+            "p": 0.61
           }
         ],
         "count": {
-          "one": 0
+          "one": 0.04
         }
       },
-      "evoke": "0.1.0",
+      "evoke": "0.20.0",
       "adapter": {
-        "name": "replay",
-        "id": "replay"
+        "name": "jev",
+        "id": "jev-1.13.0"
       },
       "gate": {
         "route": 0.5,
@@ -281,7 +297,7 @@
         "write": 0.9,
         "whole": 0.3
       },
-      "set": "h1:3445b84a45ec5a37cd4ad8f1ab4e740c49b6b177b851b66805fe22568368370b",
+      "set": "h1:608d322ad232aeaa6933cbd74ff372bba10c69bcfb9809aacac84bc2852ecbc5",
       "reflexes": {
         "errors": {
           "item": "h1:1f9acbfabf353d8c96490f7e353815438f74a439fc043941cc2ebade08dfd2fe",
@@ -335,326 +351,1045 @@
       },
       "answers": [
         {
-          "text": "Check the error rate for payments in EU West, then the same for US East.",
+          "text": "check the errors for checkout and post in #incident, payments too",
           "raw": {
             "weave.split_0": {
-              "yes": 0.93
+              "yes": 0.62
+            },
+            "weave.split_1": {
+              "yes": 0.61
             },
             "weave.count": {
-              "one": 0,
-              "two": 1,
-              "more": 0,
-              "none": 0
+              "one": 0.04,
+              "none": 0,
+              "two": 0.09,
+              "more": 0.87
             }
           }
         },
         {
-          "text": "Check the error rate for payments in EU West",
+          "text": "check the errors for checkout",
           "raw": {
             "route": {
-              "errors": 1,
-              "deploys": 0,
-              "logs": 0,
-              "suspect": 0,
               "rollback": 0,
-              "post": 0,
               "incidents": 0,
-              "incident": 0,
-              "postmortem": 0,
+              "logs": 0,
               "status": 0,
-              "outage": 0,
-              "none": 0
+              "post": 0,
+              "errors": 1,
+              "incident": 0,
+              "suspect": 0,
+              "deploys": 0,
+              "postmortem": 0,
+              "none": 0,
+              "outage": 0
             },
             "errors.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "errors.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "deploys.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "deploys.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "logs.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "logs.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "rollback.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "rollback.release": {
-              "none": 0,
-              "unstated": 1
+              "unstated": 1,
+              "none": 0
             },
             "rollback.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "post.channel": {
-              "#incident": 0,
-              "#ops": 0.01,
-              "none": 0.01,
-              "unstated": 0.98
+              "#ops": 0,
+              "unstated": 1,
+              "none": 0,
+              "#incident": 0
+            },
+            "incident.number": {
+              "unstated": 1,
+              "none": 0
+            },
+            "status.component": {
+              "search": 0,
+              "unstated": 0.01,
+              "none": 0,
+              "payments": 0,
+              "checkout": 0.99
+            },
+            "status.state": {
+              "unstated": 0.53,
+              "none": 0.02,
+              "monitoring": 0,
+              "identified": 0.03,
+              "resolved": 0,
+              "investigating": 0.42
+            },
+            "outage.service": {
+              "search": 0,
+              "unstated": 0.53,
+              "none": 0,
+              "payments": 0,
+              "checkout": 0.47
+            },
+            "outage.region": {
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.view_errors__service": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_errors__service_0": {
+              "yes": 0.76
+            },
+            "weave.view_errors__region": {
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.view_deploys__service": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_deploys__service_0": {
+              "yes": 0.76
+            },
+            "weave.view_deploys__region": {
+              "unstated": 0.92,
+              "none": 0.08,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.view_logs__service": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_logs__service_0": {
+              "yes": 0.77
+            },
+            "weave.view_logs__region": {
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.view_rollback__service": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_rollback__service_0": {
+              "yes": 0.77
+            },
+            "weave.view_rollback__region": {
+              "unstated": 0.92,
+              "none": 0.08,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.view_post__channel": {
+              "#ops": 0.02,
+              "unstated": 0.74,
+              "none": 0.2,
+              "#incident": 0.04
+            },
+            "weave.view_status__component": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_status__component_0": {
+              "yes": 0.78
+            },
+            "weave.view_status__state": {
+              "unstated": 0.14,
+              "none": 0.11,
+              "monitoring": 0,
+              "identified": 0,
+              "resolved": 0,
+              "investigating": 0.75
+            },
+            "weave.view_outage__service": {
+              "search": 0,
+              "unstated": 0,
+              "none": 0,
+              "payments": 0,
+              "checkout": 1
+            },
+            "weave.is_outage__service_0": {
+              "yes": 0.57
+            },
+            "weave.view_outage__region": {
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
+            },
+            "weave.does_errors_0_2": {
+              "result": 0.01,
+              "more": 0,
+              "courtesy": 0,
+              "action": 0.99,
+              "arg:service": 0,
+              "arg:region": 0
+            },
+            "weave.against_2100990710": {
+              "whole": 0.35,
+              "other": 0.45,
+              "less": 0.2
+            }
+          }
+        },
+        {
+          "text": "post in #incident",
+          "raw": {
+            "route": {
+              "incident": 0,
+              "postmortem": 0,
+              "errors": 0,
+              "suspect": 0,
+              "rollback": 0,
+              "logs": 0,
+              "none": 0,
+              "post": 1,
+              "incidents": 0,
+              "status": 0,
+              "deploys": 0,
+              "outage": 0
+            },
+            "errors.service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.16,
+              "unstated": 0.84
+            },
+            "errors.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "deploys.service": {
+              "search": 0,
+              "checkout": 0,
+              "payments": 0,
+              "unstated": 0.78,
+              "none": 0.22
+            },
+            "deploys.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "logs.service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.25,
+              "unstated": 0.75
+            },
+            "logs.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "rollback.service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.2,
+              "unstated": 0.8
+            },
+            "rollback.release": {
+              "unstated": 1,
+              "none": 0
+            },
+            "rollback.region": {
+              "none": 0,
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0
+            },
+            "post.channel": {
+              "#incident": 1,
+              "#ops": 0,
+              "unstated": 0,
+              "none": 0
             },
             "incident.number": {
               "none": 0.01,
               "unstated": 0.99
             },
             "status.component": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
-              "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.17,
+              "unstated": 0.83
             },
             "status.state": {
-              "investigating": 0.32,
+              "monitoring": 0,
               "identified": 0,
-              "monitoring": 0.05,
+              "investigating": 0,
               "resolved": 0,
-              "none": 0.01,
-              "unstated": 0.62
+              "unstated": 0.97,
+              "none": 0.03
             },
             "outage.service": {
-              "checkout": 0,
-              "payments": 0.64,
               "search": 0,
-              "none": 0,
-              "unstated": 0.36
+              "checkout": 0,
+              "payments": 0,
+              "unstated": 1,
+              "none": 0
             },
             "outage.region": {
-              "eu-west": 1,
               "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0
             },
             "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_errors__service_1": {
-              "yes": 0.84
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.61,
+              "unstated": 0.39
             },
             "weave.view_errors__region": {
-              "eu-west": 1,
               "us-east": 0,
-              "none": 0,
-              "unstated": 0
+              "unstated": 0.77,
+              "none": 0.23,
+              "eu-west": 0
             },
-            "weave.is_errors__region_0": {
-              "yes": 0.84
+            "weave.view_deploys__service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.56,
+              "unstated": 0.44
+            },
+            "weave.view_deploys__region": {
+              "none": 0.24,
+              "us-east": 0,
+              "unstated": 0.76,
+              "eu-west": 0
+            },
+            "weave.view_logs__service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.56,
+              "unstated": 0.44
+            },
+            "weave.view_logs__region": {
+              "unstated": 0.81,
+              "none": 0.19,
+              "us-east": 0,
+              "eu-west": 0
+            },
+            "weave.view_rollback__service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "unstated": 0.42,
+              "none": 0.58
+            },
+            "weave.view_rollback__region": {
+              "none": 0.24,
+              "unstated": 0.76,
+              "us-east": 0,
+              "eu-west": 0
+            },
+            "weave.view_post__channel": {
+              "#incident": 1,
+              "#ops": 0,
+              "unstated": 0,
+              "none": 0
+            },
+            "weave.is_post__channel_0": {
+              "yes": 0.89
+            },
+            "weave.view_status__component": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.57,
+              "unstated": 0.43
+            },
+            "weave.view_status__state": {
+              "identified": 0,
+              "investigating": 0,
+              "unstated": 0.6,
+              "resolved": 0,
+              "none": 0.4,
+              "monitoring": 0
+            },
+            "weave.view_outage__service": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.55,
+              "unstated": 0.45
+            },
+            "weave.view_outage__region": {
+              "unstated": 0.8,
+              "none": 0.2,
+              "us-east": 0,
+              "eu-west": 0
+            },
+            "weave.does_post_0_0": {
+              "result": 0,
+              "courtesy": 0,
+              "action": 1,
+              "more": 0,
+              "arg:channel": 0
+            },
+            "weave.against_1461761989": {
+              "other": 0.01,
+              "less": 0.08,
+              "whole": 0.91
+            }
+          }
+        },
+        {
+          "text": "payments too",
+          "raw": {
+            "route": {
+              "incident": 0,
+              "deploys": 0.05,
+              "post": 0.07,
+              "none": 0.58,
+              "postmortem": 0,
+              "rollback": 0.01,
+              "incidents": 0.01,
+              "errors": 0.01,
+              "suspect": 0,
+              "status": 0.12,
+              "logs": 0.02,
+              "outage": 0.13
+            },
+            "errors.service": {
+              "search": 0,
+              "payments": 0.97,
+              "unstated": 0.03,
+              "none": 0,
+              "checkout": 0
+            },
+            "errors.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0,
+              "none": 0
+            },
+            "deploys.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "deploys.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "logs.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "logs.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "rollback.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "rollback.release": {
+              "unstated": 1,
+              "none": 0
+            },
+            "rollback.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0,
+              "none": 0
+            },
+            "post.channel": {
+              "unstated": 0.98,
+              "#incident": 0,
+              "none": 0.01,
+              "#ops": 0.01
+            },
+            "incident.number": {
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "status.component": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "status.state": {
+              "resolved": 0.01,
+              "monitoring": 0.04,
+              "unstated": 0.92,
+              "investigating": 0.01,
+              "identified": 0,
+              "none": 0.02
+            },
+            "outage.service": {
+              "search": 0,
+              "payments": 0.99,
+              "unstated": 0.01,
+              "none": 0,
+              "checkout": 0
+            },
+            "outage.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "weave.view_errors__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_errors__service_1": {
+              "yes": 0.7
+            },
+            "weave.view_errors__region": {
+              "us-east": 0,
+              "unstated": 0.71,
+              "none": 0.29,
+              "eu-west": 0
+            },
+            "weave.view_deploys__service": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_deploys__service_1": {
+              "yes": 0.71
+            },
+            "weave.view_deploys__region": {
+              "us-east": 0,
+              "unstated": 0.7,
+              "none": 0.3,
+              "eu-west": 0
+            },
+            "weave.view_logs__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_logs__service_1": {
+              "yes": 0.69
+            },
+            "weave.view_logs__region": {
+              "us-east": 0,
+              "unstated": 0.72,
+              "none": 0.28,
+              "eu-west": 0
+            },
+            "weave.view_rollback__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_rollback__service_1": {
+              "yes": 0.71
+            },
+            "weave.view_rollback__region": {
+              "us-east": 0,
+              "unstated": 0.75,
+              "eu-west": 0,
+              "none": 0.25
+            },
+            "weave.view_post__channel": {
+              "unstated": 0.44,
+              "#incident": 0,
+              "none": 0.53,
+              "#ops": 0.03
+            },
+            "weave.view_status__component": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_status__component_1": {
+              "yes": 0.7
+            },
+            "weave.view_status__state": {
+              "resolved": 0.02,
+              "monitoring": 0.08,
+              "unstated": 0.47,
+              "investigating": 0,
+              "identified": 0,
+              "none": 0.43
+            },
+            "weave.view_outage__service": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_outage__service_1": {
+              "yes": 0.69
+            },
+            "weave.view_outage__region": {
+              "us-east": 0,
+              "unstated": 0.73,
+              "none": 0.27,
+              "eu-west": 0
+            }
+          }
+        },
+        {
+          "text": "payments too",
+          "raw": {
+            "route": {
+              "post": 0.45,
+              "none": 0.55
+            },
+            "post.channel": {
+              "unstated": 0.97,
+              "#incident": 0,
+              "none": 0.02,
+              "#ops": 0.01
+            },
+            "weave.view_post__channel": {
+              "unstated": 0.46,
+              "#incident": 0,
+              "none": 0.51,
+              "#ops": 0.03
+            }
+          }
+        },
+        {
+          "text": "post in payments too",
+          "raw": {
+            "route": {
+              "post": 0.99,
+              "none": 0.01
+            },
+            "post.channel": {
+              "#incident": 0,
+              "#ops": 0.01,
+              "unstated": 0.41,
+              "none": 0.58
+            },
+            "weave.view_post__channel": {
+              "#incident": 0,
+              "#ops": 0.05,
+              "unstated": 0.23,
+              "none": 0.72
+            },
+            "weave.does_post_0_0": {
+              "more": 0.01,
+              "arg:channel": 0,
+              "action": 0.99,
+              "courtesy": 0,
+              "result": 0
+            },
+            "weave.does_post_2_3": {
+              "more": 0.51,
+              "arg:channel": 0.47,
+              "action": 0.01,
+              "courtesy": 0,
+              "result": 0.01
+            },
+            "weave.against_1914900547": {
+              "less": 0.61,
+              "other": 0.04,
+              "whole": 0.35
+            }
+          }
+        },
+        {
+          "text": "post in #incident, payments too",
+          "raw": {
+            "weave.is_status__component_1": {
+              "yes": 0.66
+            },
+            "deploys.service": {
+              "payments": 0.92,
+              "search": 0,
+              "unstated": 0.06,
+              "none": 0.02,
+              "checkout": 0
+            },
+            "logs.region": {
+              "eu-west": 0,
+              "unstated": 0.99,
+              "us-east": 0,
+              "none": 0.01
+            },
+            "rollback.release": {
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "outage.region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0
+            },
+            "weave.view_errors__service": {
+              "payments": 0.99,
+              "search": 0,
+              "unstated": 0,
+              "none": 0.01,
+              "checkout": 0
             },
             "weave.view_deploys__service": {
               "checkout": 0,
-              "payments": 1,
-              "search": 0,
-              "none": 0,
-              "unstated": 0
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
             },
-            "weave.is_deploys__service_1": {
-              "yes": 0.84
-            },
-            "weave.view_deploys__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_deploys__region_0": {
-              "yes": 0.85
-            },
-            "weave.view_logs__service": {
-              "checkout": 0,
-              "payments": 1,
-              "search": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_logs__service_1": {
-              "yes": 0.84
-            },
-            "weave.view_logs__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_logs__region_0": {
-              "yes": 0.84
-            },
-            "weave.view_rollback__service": {
-              "checkout": 0,
-              "payments": 1,
-              "search": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_rollback__service_1": {
-              "yes": 0.83
-            },
-            "weave.view_rollback__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_rollback__region_0": {
-              "yes": 0.85
-            },
-            "weave.view_post__channel": {
-              "#incident": 0.01,
-              "#ops": 0.15,
-              "none": 0.3,
-              "unstated": 0.54
+            "weave.is_post__channel_0": {
+              "yes": 0.8
             },
             "weave.view_status__component": {
               "checkout": 0,
-              "payments": 1,
-              "search": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "rollback.service": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.92,
+              "none": 0.02,
+              "search": 0
+            },
+            "weave.view_logs__service": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "weave.view_rollback__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.65,
+              "none": 0.35
+            },
+            "weave.view_post__channel": {
+              "#ops": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
-            },
-            "weave.is_status__component_1": {
-              "yes": 0.83
-            },
-            "weave.view_status__state": {
-              "investigating": 0.33,
-              "identified": 0,
-              "monitoring": 0.06,
-              "resolved": 0,
-              "none": 0.38,
-              "unstated": 0.23
+              "#incident": 1
             },
             "weave.view_outage__service": {
               "checkout": 0,
-              "payments": 1,
               "search": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_outage__service_1": {
-              "yes": 0.45
+              "unstated": 0,
+              "none": 0.01,
+              "payments": 0.99
             },
             "weave.view_outage__region": {
-              "eu-west": 1,
+              "eu-west": 0,
+              "unstated": 0.65,
               "us-east": 0,
+              "none": 0.35
+            },
+            "weave.view_errors__region": {
+              "eu-west": 0,
+              "unstated": 0.65,
+              "us-east": 0,
+              "none": 0.35
+            },
+            "weave.view_logs__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.65,
+              "none": 0.35
+            },
+            "errors.service": {
+              "checkout": 0,
+              "unstated": 0.07,
+              "payments": 0.91,
+              "none": 0.02,
+              "search": 0
+            },
+            "post.channel": {
+              "#ops": 0,
+              "unstated": 0,
+              "none": 0.02,
+              "#incident": 0.98
+            },
+            "incident.number": {
+              "unstated": 1,
+              "none": 0
+            },
+            "status.component": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.92,
+              "none": 0.02,
+              "search": 0
+            },
+            "weave.is_errors__service_1": {
+              "yes": 0.67
+            },
+            "weave.is_logs__service_1": {
+              "yes": 0.66
+            },
+            "weave.is_rollback__service_1": {
+              "yes": 0.67
+            },
+            "route": {
+              "suspect": 0,
+              "incident": 0,
+              "post": 0.99,
+              "errors": 0,
               "none": 0,
-              "unstated": 0
+              "outage": 0.01,
+              "deploys": 0,
+              "status": 0,
+              "logs": 0,
+              "postmortem": 0,
+              "incidents": 0,
+              "rollback": 0
             },
-            "weave.is_outage__region_0": {
-              "yes": 0.85
+            "errors.region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.99,
+              "none": 0.01
             },
-            "weave.does_errors_0_3": {
-              "action": 0.98,
-              "arg:service": 0,
-              "arg:region": 0,
+            "status.state": {
+              "investigating": 0.0202020202020202,
+              "unstated": 0.9393939393939393,
+              "monitoring": 0.0101010101010101,
+              "resolved": 0,
+              "identified": 0,
+              "none": 0.0303030303030303
+            },
+            "deploys.region": {
+              "eu-west": 0,
+              "unstated": 1,
+              "us-east": 0,
+              "none": 0
+            },
+            "logs.service": {
+              "checkout": 0,
+              "search": 0,
+              "payments": 0.92,
+              "none": 0.02,
+              "unstated": 0.06
+            },
+            "outage.service": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.94,
+              "none": 0,
+              "search": 0
+            },
+            "weave.view_deploys__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.67,
+              "none": 0.33
+            },
+            "weave.view_status__state": {
+              "investigating": 0.01,
+              "monitoring": 0.02,
+              "unstated": 0.48,
+              "resolved": 0,
+              "identified": 0,
+              "none": 0.49
+            },
+            "weave.is_outage__service_1": {
+              "yes": 0.71
+            },
+            "rollback.region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "weave.is_deploys__service_1": {
+              "yes": 0.65
+            },
+            "weave.view_rollback__service": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "weave.does_post_0_0": {
+              "action": 1,
+              "arg:channel": 0,
+              "more": 0,
+              "result": 0,
+              "courtesy": 0
+            },
+            "weave.does_post_3_4": {
+              "action": 0.01,
+              "arg:channel": 0.01,
               "result": 0.02,
-              "courtesy": 0,
-              "more": 0
+              "more": 0.96,
+              "courtesy": 0
             },
-            "weave.against_938324902": {
-              "whole": 0.93,
-              "less": 0.06,
+            "weave.against_1461761989": {
+              "less": 0.9299999999999999,
+              "whole": 0.06,
               "other": 0.01
             }
           }
         },
         {
-          "text": "the same for US East.",
+          "text": "check the errors for checkout and post in #incident, payments too",
           "raw": {
             "route": {
-              "errors": 0.04,
-              "deploys": 0.08,
-              "logs": 0.02,
-              "suspect": 0,
-              "rollback": 0.05,
-              "post": 0,
-              "incidents": 0.01,
-              "incident": 0,
-              "postmortem": 0.01,
-              "status": 0.03,
-              "outage": 0.02,
-              "none": 0.74
+              "errors": 0.5555555555555556,
+              "deploys": 0,
+              "logs": 0.0404040404040404,
+              "suspect": 0.0101010101010101,
+              "rollback": 0,
+              "post": 0.1313131313131313,
+              "incidents": 0,
+              "incident": 0.0101010101010101,
+              "postmortem": 0,
+              "status": 0,
+              "outage": 0.2222222222222222,
+              "none": 0.0303030303030303
             },
             "errors.service": {
-              "checkout": 0,
-              "payments": 0,
+              "checkout": 0.34,
+              "payments": 0.06,
               "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "none": 0.08,
+              "unstated": 0.52
             },
             "errors.region": {
               "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "deploys.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
+              "us-east": 0,
               "none": 0.01,
               "unstated": 0.99
+            },
+            "deploys.service": {
+              "checkout": 0.34,
+              "payments": 0.07,
+              "search": 0,
+              "none": 0.1,
+              "unstated": 0.49
             },
             "deploys.region": {
               "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "logs.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
+              "us-east": 0,
               "none": 0.01,
               "unstated": 0.99
+            },
+            "logs.service": {
+              "checkout": 0.37,
+              "payments": 0.07,
+              "search": 0,
+              "none": 0.08,
+              "unstated": 0.48
             },
             "logs.region": {
               "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
+              "us-east": 0,
+              "none": 0.02,
+              "unstated": 0.98
             },
             "rollback.service": {
-              "checkout": 0,
-              "payments": 0,
+              "checkout": 0.36,
+              "payments": 0.07,
               "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "none": 0.07,
+              "unstated": 0.5
             },
             "rollback.release": {
               "none": 0,
@@ -662,340 +1397,196 @@
             },
             "rollback.region": {
               "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "post.channel": {
-              "#incident": 0,
-              "#ops": 0,
-              "none": 0,
-              "unstated": 1
-            },
-            "incident.number": {
-              "none": 0,
-              "unstated": 1
-            },
-            "status.component": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
+              "us-east": 0,
               "none": 0.01,
               "unstated": 0.99
             },
-            "status.state": {
-              "investigating": 0,
-              "identified": 0,
-              "monitoring": 0.01,
-              "resolved": 0.01,
-              "none": 0.03,
-              "unstated": 0.95
-            },
-            "outage.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0,
-              "unstated": 1
-            },
-            "outage.region": {
-              "eu-west": 0,
-              "us-east": 0.99,
-              "none": 0,
-              "unstated": 0.01
-            },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.31,
-              "unstated": 0.69
-            },
-            "weave.view_errors__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_errors__region_1": {
-              "yes": 0.8
-            },
-            "weave.view_deploys__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.19,
-              "unstated": 0.81
-            },
-            "weave.view_deploys__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_deploys__region_1": {
-              "yes": 0.8
-            },
-            "weave.view_logs__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.23,
-              "unstated": 0.77
-            },
-            "weave.view_logs__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_logs__region_1": {
-              "yes": 0.81
-            },
-            "weave.view_rollback__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.19,
-              "unstated": 0.81
-            },
-            "weave.view_rollback__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_rollback__region_1": {
-              "yes": 0.8
-            },
-            "weave.view_post__channel": {
-              "#incident": 0.01,
+            "post.channel": {
+              "#incident": 1,
               "#ops": 0,
-              "none": 0.38,
-              "unstated": 0.61
+              "none": 0,
+              "unstated": 0
             },
-            "weave.view_status__component": {
-              "checkout": 0,
-              "payments": 0,
+            "incident.number": {
+              "none": 0.17,
+              "unstated": 0.83
+            },
+            "status.component": {
+              "checkout": 0.34,
+              "payments": 0.08,
               "search": 0,
-              "none": 0.28,
-              "unstated": 0.72
+              "none": 0.08,
+              "unstated": 0.5
             },
-            "weave.view_status__state": {
-              "investigating": 0,
+            "status.state": {
+              "investigating": 0.5700000000000001,
               "identified": 0,
               "monitoring": 0,
               "resolved": 0,
-              "none": 0.32,
-              "unstated": 0.68
-            },
-            "weave.view_outage__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.31,
-              "unstated": 0.69
-            },
-            "weave.view_outage__region": {
-              "eu-west": 0,
-              "us-east": 1,
               "none": 0,
-              "unstated": 0
+              "unstated": 0.43
             },
-            "weave.is_outage__region_1": {
-              "yes": 0.79
-            }
-          }
-        },
-        {
-          "text": "the same for US East.",
-          "raw": {
-            "route": {
-              "errors": 0.37,
-              "none": 0.63
-            },
-            "errors.service": {
-              "checkout": 0,
-              "payments": 0,
+            "outage.service": {
+              "checkout": 0.04,
+              "payments": 0.01,
               "search": 0,
+              "none": 0.01,
+              "unstated": 0.94
+            },
+            "outage.region": {
+              "eu-west": 0,
+              "us-east": 0,
               "none": 0.01,
               "unstated": 0.99
             },
-            "errors.region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
+            "weave.view_errors__service": {
+              "checkout": 0.86,
+              "payments": 0.12,
+              "search": 0,
+              "none": 0.02,
               "unstated": 0
             },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.23,
-              "unstated": 0.77
+            "weave.is_errors__service_0": {
+              "yes": 0.54
+            },
+            "weave.is_errors__service_1": {
+              "yes": 0.54
             },
             "weave.view_errors__region": {
               "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
+              "us-east": 0,
+              "none": 0.2,
+              "unstated": 0.8
+            },
+            "weave.view_deploys__service": {
+              "checkout": 0.85,
+              "payments": 0.12,
+              "search": 0,
+              "none": 0.03,
               "unstated": 0
             },
-            "weave.is_errors__region_1": {
-              "yes": 0.77
-            }
-          }
-        },
-        {
-          "text": "Check the error rate for the same for US East. in EU West",
-          "raw": {
-            "route": {
-              "errors": 1,
-              "none": 0
+            "weave.is_deploys__service_0": {
+              "yes": 0.54
             },
-            "errors.service": {
-              "checkout": 0,
-              "payments": 0,
+            "weave.is_deploys__service_1": {
+              "yes": 0.54
+            },
+            "weave.view_deploys__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "none": 0.2,
+              "unstated": 0.8
+            },
+            "weave.view_logs__service": {
+              "checkout": 0.85,
+              "payments": 0.13,
               "search": 0,
-              "none": 0,
-              "unstated": 1
+              "none": 0.02,
+              "unstated": 0
             },
-            "errors.region": {
-              "eu-west": 0.39,
-              "us-east": 0.33,
-              "none": 0.01,
-              "unstated": 0.27
+            "weave.is_logs__service_0": {
+              "yes": 0.52
             },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
+            "weave.is_logs__service_1": {
+              "yes": 0.54
+            },
+            "weave.view_logs__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "none": 0.17,
+              "unstated": 0.83
+            },
+            "weave.view_rollback__service": {
+              "checkout": 0.86,
+              "payments": 0.11,
               "search": 0,
+              "none": 0.03,
+              "unstated": 0
+            },
+            "weave.is_rollback__service_0": {
+              "yes": 0.53
+            },
+            "weave.is_rollback__service_1": {
+              "yes": 0.54
+            },
+            "weave.view_rollback__region": {
+              "eu-west": 0,
+              "us-east": 0,
               "none": 0.19,
               "unstated": 0.81
             },
-            "weave.view_errors__region": {
-              "eu-west": 0.14,
-              "us-east": 0.71,
-              "none": 0.11,
-              "unstated": 0.04
-            },
-            "weave.is_errors__region_0": {
-              "yes": 0.67
-            },
-            "weave.is_errors__region_1": {
-              "yes": 0.58
-            },
-            "weave.does_errors_0_3": {
-              "action": 0.99,
-              "arg:service": 0,
-              "arg:region": 0,
-              "result": 0.01,
-              "courtesy": 0,
-              "more": 0
-            },
-            "weave.does_errors_6_6": {
-              "action": 0.02,
-              "arg:service": 0.84,
-              "arg:region": 0.02,
-              "result": 0.09,
-              "courtesy": 0,
-              "more": 0.03
-            },
-            "weave.does_errors_8_9": {
-              "action": 0,
-              "arg:service": 0,
-              "arg:region": 0.97,
-              "result": 0,
-              "courtesy": 0,
-              "more": 0.03
-            },
-            "weave.does_errors_11_12": {
-              "action": 0,
-              "arg:service": 0,
-              "arg:region": 0.92,
-              "result": 0,
-              "courtesy": 0,
-              "more": 0.08
-            },
-            "weave.against_3192640871": {
-              "whole": 0.08,
-              "less": 0.89,
-              "other": 0.03
-            }
-          }
-        },
-        {
-          "text": "Check the error rate for payments in EU West, then the same for US East.",
-          "raw": {
-            "weave.part_51_72": {
-              "asks": 0.82,
-              "detail": 0.18,
-              "aside": 0
-            }
-          }
-        },
-        {
-          "text": "Check the error rate for payments in EU West, then the same for US East.",
-          "raw": {
-            "weave.span_51_72": {
-              "errors": 1,
-              "deploys": 0,
-              "logs": 0,
-              "suspect": 0,
-              "rollback": 0,
-              "post": 0,
-              "incidents": 0,
-              "incident": 0,
-              "postmortem": 0,
-              "status": 0,
-              "outage": 0,
-              "none": 0
-            }
-          }
-        },
-        {
-          "text": "the same for US East.",
-          "raw": {
-            "errors.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
-            },
-            "errors.region": {
-              "eu-west": 0,
-              "us-east": 1,
+            "weave.view_post__channel": {
+              "#incident": 1,
+              "#ops": 0,
               "none": 0,
               "unstated": 0
             },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
+            "weave.is_post__channel_0": {
+              "yes": 0.85
+            },
+            "weave.view_status__component": {
+              "checkout": 0.86,
+              "payments": 0.12,
               "search": 0,
-              "none": 0.24,
-              "unstated": 0.76
+              "none": 0.02,
+              "unstated": 0
             },
-            "weave.view_errors__region": {
+            "weave.is_status__component_0": {
+              "yes": 0.54
+            },
+            "weave.is_status__component_1": {
+              "yes": 0.55
+            },
+            "weave.view_status__state": {
+              "investigating": 0.8181818181818182,
+              "identified": 0,
+              "monitoring": 0,
+              "resolved": 0,
+              "none": 0.08080808080808081,
+              "unstated": 0.10101010101010102
+            },
+            "weave.view_outage__service": {
+              "checkout": 0.84,
+              "payments": 0.13,
+              "search": 0,
+              "none": 0.03,
+              "unstated": 0
+            },
+            "weave.is_outage__service_0": {
+              "yes": 0.48
+            },
+            "weave.is_outage__service_1": {
+              "yes": 0.49
+            },
+            "weave.view_outage__region": {
               "eu-west": 0,
-              "us-east": 0.99,
-              "none": 0,
-              "unstated": 0.01
+              "us-east": 0,
+              "none": 0.14,
+              "unstated": 0.86
             },
-            "weave.is_errors__region_1": {
-              "yes": 0.77
-            },
-            "weave.does_errors_1_1": {
-              "action": 0.18,
-              "arg:service": 0.15,
-              "arg:region": 0.15,
-              "result": 0.5,
+            "weave.does_errors_0_2": {
+              "arg:service": 0,
+              "result": 0.01,
+              "action": 0.99,
+              "more": 0,
               "courtesy": 0,
-              "more": 0.02
+              "arg:region": 0
             },
-            "weave.against_3814428804": {
-              "whole": 0.46,
-              "less": 0.22,
-              "other": 0.32
+            "weave.does_errors_6_6": {
+              "arg:service": 0.65,
+              "result": 0,
+              "action": 0.07,
+              "more": 0.28,
+              "courtesy": 0,
+              "arg:region": 0
+            },
+            "weave.does_errors_8_10": {
+              "arg:service": 0.1717171717171717,
+              "action": 0.0101010101010101,
+              "arg:region": 0,
+              "more": 0.8080808080808081,
+              "courtesy": 0,
+              "result": 0.0101010101010101
             }
           }
         }
@@ -1008,36 +1599,27 @@
   "expect": {
     "ok": {
       "weave": {
-        "input": "Check the error rate for payments in EU West, then the same for US East.",
+        "input": "check the errors for checkout and post in #incident, payments too",
         "steps": [
           {
             "n": 1,
-            "text": "Check the error rate for payments in EU West",
-            "end": 44,
+            "text": "check the errors for checkout",
+            "end": 29,
             "decision": {
               "outcome": "run",
               "reflex": "errors",
               "args": {
                 "service": {
                   "type": "word",
-                  "word": "payments"
-                },
-                "region": {
-                  "type": "word",
-                  "word": "eu-west"
+                  "word": "checkout"
                 }
               },
-              "call": "errors service=\"payments\" region=\"eu-west\"",
+              "call": "errors service=\"checkout\"",
               "effect": "read",
               "basis": {
                 "service": {
                   "by": "views",
-                  "ask": 1,
-                  "reader": 1
-                },
-                "region": {
-                  "by": "views",
-                  "ask": 1,
+                  "ask": 0.99,
                   "reader": 1
                 }
               },
@@ -1045,19 +1627,19 @@
                 {
                   "words": {
                     "start": 0,
-                    "end": 20,
-                    "text": "Check the error rate"
+                    "end": 16,
+                    "text": "check the errors"
                   },
                   "does": "action",
-                  "p": 0.98
+                  "p": 0.99
                 }
               ],
-              "whole": 0.93,
-              "confidence": 1,
+              "whole": 0.35,
+              "confidence": 0.99,
               "weakest": {
-                "question": "route",
-                "top": "errors",
-                "p": 1
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
               },
               "judgments": [
                 {
@@ -1067,13 +1649,8 @@
                 },
                 {
                   "question": "errors.service",
-                  "top": "payments",
-                  "p": 1
-                },
-                {
-                  "question": "errors.region",
-                  "top": "eu-west",
-                  "p": 1
+                  "top": "checkout",
+                  "p": 0.99
                 }
               ],
               "runner_up": {
@@ -1132,117 +1709,140 @@
           },
           {
             "n": 2,
-            "text": "the same for US East.",
-            "end": 72,
+            "text": "post in #incident, payments too",
+            "end": 65,
             "decision": {
               "outcome": "confirm",
-              "reflex": "errors",
+              "reflex": "post",
               "args": {
-                "service": {
+                "channel": {
                   "type": "word",
-                  "word": "payments"
-                },
-                "region": {
-                  "type": "word",
-                  "word": "us-east"
+                  "word": "#incident"
                 }
               },
-              "call": "errors service=\"payments\" region=\"us-east\"",
-              "effect": "read",
+              "call": "post channel=\"#incident\"",
+              "effect": "write",
               "basis": {
-                "region": {
+                "channel": {
                   "by": "views",
-                  "ask": 1,
-                  "reader": 0.99
-                },
-                "service": {
-                  "by": "views",
-                  "ask": 1,
+                  "ask": 0.98,
                   "reader": 1
                 }
               },
               "left": [
                 {
                   "words": {
-                    "start": 4,
-                    "end": 8,
-                    "text": "same"
+                    "start": 0,
+                    "end": 4,
+                    "text": "post"
                   },
-                  "does": "result",
-                  "p": 0.5,
+                  "does": "action",
+                  "p": 1
+                },
+                {
+                  "words": {
+                    "start": 19,
+                    "end": 31,
+                    "text": "payments too"
+                  },
+                  "does": "more",
+                  "p": 0.96,
                   "again": true
                 }
               ],
-              "whole": 0.46,
-              "confidence": 0.99,
+              "whole": 0.06,
+              "confidence": 0.98,
               "weakest": {
-                "question": "weave.view_errors__region",
-                "top": "us-east",
-                "p": 0.99
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.98
               },
               "judgments": [
                 {
-                  "question": "weave.span_51_72",
-                  "top": "errors",
-                  "p": 1
-                },
-                {
-                  "question": "weave.view_errors__region",
-                  "top": "us-east",
+                  "question": "route",
+                  "top": "post",
                   "p": 0.99
                 },
                 {
-                  "question": "errors.service",
-                  "top": "payments",
-                  "p": 1
+                  "question": "post.channel",
+                  "top": "#incident",
+                  "p": 0.98
                 }
               ],
+              "runner_up": {
+                "reflex": "outage",
+                "route": 0.01
+              },
               "contenders": [
                 {
+                  "reflex": "post",
+                  "route": 0.99
+                },
+                {
+                  "reflex": "outage",
+                  "route": 0.01
+                },
+                {
                   "reflex": "errors",
-                  "route": 1
+                  "route": 0
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
                 }
               ],
               "prompt": {
-                "own": "errors service=\"payments\" region=\"us-east\" · read · weakest: region 0.99",
-                "reason": "\"the same for US East.\" matches nothing alone, and the whole request reads it as errors at 1.00, which always waits for a yes",
-                "template": "Show the error rate of payments?"
+                "own": "post channel=\"#incident\" · write · weakest: channel 0.98",
+                "reason": "\"payments too\" asks for another thing; it holds all you said at 0.06, and a call runs at 0.30 or more; it leaves out \"payments too\"",
+                "template": "Post to #incident?"
               },
               "because": [
                 {
-                  "type": "named",
-                  "words": "the same for US East.",
-                  "p": 1
+                  "type": "more",
+                  "words": {
+                    "start": 19,
+                    "end": 31,
+                    "text": "payments too"
+                  }
+                },
+                {
+                  "type": "whole",
+                  "p": 0.06,
+                  "floor": 0.3
                 }
               ]
             },
-            "reflex": "errors",
-            "effect": "read",
-            "refs": [
-              {
-                "span": {
-                  "start": 0,
-                  "end": 12,
-                  "text": "the same for"
-                },
-                "from": [
-                  0
-                ],
-                "how": "phrase",
-                "weak": true,
-                "noun": "for"
-              }
-            ],
-            "repair": "named",
-            "shared": {
-              "service": {
-                "word": "payments",
-                "via": "fill"
-              }
-            },
-            "after": [
-              1
-            ]
+            "reflex": "post",
+            "effect": "write",
+            "repair": "merged"
           }
         ],
         "stages": [
@@ -1256,266 +1856,258 @@
         "verdict": {
           "outcome": "run"
         },
-        "exclusive": false,
+        "exclusive": true,
         "splits": [
           {
-            "start": 44,
-            "end": 51,
-            "word": "then",
-            "order": "then",
-            "p": 0.93,
+            "start": 29,
+            "end": 34,
+            "word": "and",
+            "order": "and",
+            "p": 0.62,
             "cut": true
+          },
+          {
+            "start": 51,
+            "end": 53,
+            "word": ",",
+            "order": "and",
+            "p": 0.61
           }
         ],
         "count": {
-          "one": 0
+          "one": 0.04
         }
       },
       "decided": [
         {
           "asked": {
-            "text": "Check the error rate for payments in EU West"
+            "text": "check the errors for checkout"
           },
           "raw": {
             "route": {
-              "errors": 1,
-              "deploys": 0,
-              "logs": 0,
-              "suspect": 0,
               "rollback": 0,
-              "post": 0,
               "incidents": 0,
-              "incident": 0,
-              "postmortem": 0,
+              "logs": 0,
               "status": 0,
-              "outage": 0,
-              "none": 0
+              "post": 0,
+              "errors": 1,
+              "incident": 0,
+              "suspect": 0,
+              "deploys": 0,
+              "postmortem": 0,
+              "none": 0,
+              "outage": 0
             },
             "errors.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "errors.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "deploys.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "deploys.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "logs.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "logs.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "rollback.service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "rollback.release": {
-              "none": 0,
-              "unstated": 1
+              "unstated": 1,
+              "none": 0
             },
             "rollback.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "post.channel": {
-              "#incident": 0,
-              "#ops": 0.01,
-              "none": 0.01,
-              "unstated": 0.98
+              "#ops": 0,
+              "unstated": 1,
+              "none": 0,
+              "#incident": 0
             },
             "incident.number": {
-              "none": 0.01,
-              "unstated": 0.99
+              "unstated": 1,
+              "none": 0
             },
             "status.component": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0.01,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 0.99
             },
             "status.state": {
-              "investigating": 0.32,
-              "identified": 0,
-              "monitoring": 0.05,
+              "unstated": 0.53,
+              "none": 0.02,
+              "monitoring": 0,
+              "identified": 0.03,
               "resolved": 0,
-              "none": 0.01,
-              "unstated": 0.62
+              "investigating": 0.42
             },
             "outage.service": {
-              "checkout": 0,
-              "payments": 0.64,
               "search": 0,
+              "unstated": 0.53,
               "none": 0,
-              "unstated": 0.36
+              "payments": 0,
+              "checkout": 0.47
             },
             "outage.region": {
-              "eu-west": 1,
-              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0,
+              "us-east": 0
             },
             "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_errors__service_1": {
-              "yes": 0.84
+            "weave.is_errors__service_0": {
+              "yes": 0.76
             },
             "weave.view_errors__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_errors__region_0": {
-              "yes": 0.84
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
             },
             "weave.view_deploys__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_deploys__service_1": {
-              "yes": 0.84
+            "weave.is_deploys__service_0": {
+              "yes": 0.76
             },
             "weave.view_deploys__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_deploys__region_0": {
-              "yes": 0.85
+              "unstated": 0.92,
+              "none": 0.08,
+              "eu-west": 0,
+              "us-east": 0
             },
             "weave.view_logs__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_logs__service_1": {
-              "yes": 0.84
+            "weave.is_logs__service_0": {
+              "yes": 0.77
             },
             "weave.view_logs__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_logs__region_0": {
-              "yes": 0.84
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
             },
             "weave.view_rollback__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_rollback__service_1": {
-              "yes": 0.83
+            "weave.is_rollback__service_0": {
+              "yes": 0.77
             },
             "weave.view_rollback__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_rollback__region_0": {
-              "yes": 0.85
+              "unstated": 0.92,
+              "none": 0.08,
+              "eu-west": 0,
+              "us-east": 0
             },
             "weave.view_post__channel": {
-              "#incident": 0.01,
-              "#ops": 0.15,
-              "none": 0.3,
-              "unstated": 0.54
+              "#ops": 0.02,
+              "unstated": 0.74,
+              "none": 0.2,
+              "#incident": 0.04
             },
             "weave.view_status__component": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_status__component_1": {
-              "yes": 0.83
+            "weave.is_status__component_0": {
+              "yes": 0.78
             },
             "weave.view_status__state": {
-              "investigating": 0.33,
+              "unstated": 0.14,
+              "none": 0.11,
+              "monitoring": 0,
               "identified": 0,
-              "monitoring": 0.06,
               "resolved": 0,
-              "none": 0.38,
-              "unstated": 0.23
+              "investigating": 0.75
             },
             "weave.view_outage__service": {
-              "checkout": 0,
-              "payments": 1,
               "search": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0
+              "payments": 0,
+              "checkout": 1
             },
-            "weave.is_outage__service_1": {
-              "yes": 0.45
+            "weave.is_outage__service_0": {
+              "yes": 0.57
             },
             "weave.view_outage__region": {
-              "eu-west": 1,
-              "us-east": 0,
-              "none": 0,
-              "unstated": 0
+              "unstated": 0.93,
+              "none": 0.07,
+              "eu-west": 0,
+              "us-east": 0
             },
-            "weave.is_outage__region_0": {
-              "yes": 0.85
-            },
-            "weave.does_errors_0_3": {
-              "action": 0.98,
-              "arg:service": 0,
-              "arg:region": 0,
-              "result": 0.02,
+            "weave.does_errors_0_2": {
+              "result": 0.01,
+              "more": 0,
               "courtesy": 0,
-              "more": 0
+              "action": 0.99,
+              "arg:service": 0,
+              "arg:region": 0
             },
-            "weave.against_938324902": {
-              "whole": 0.93,
-              "less": 0.06,
-              "other": 0.01
+            "weave.against_2100990710": {
+              "whole": 0.35,
+              "other": 0.45,
+              "less": 0.2
             }
           },
           "decision": {
@@ -1524,24 +2116,15 @@
             "args": {
               "service": {
                 "type": "word",
-                "word": "payments"
-              },
-              "region": {
-                "type": "word",
-                "word": "eu-west"
+                "word": "checkout"
               }
             },
-            "call": "errors service=\"payments\" region=\"eu-west\"",
+            "call": "errors service=\"checkout\"",
             "effect": "read",
             "basis": {
               "service": {
                 "by": "views",
-                "ask": 1,
-                "reader": 1
-              },
-              "region": {
-                "by": "views",
-                "ask": 1,
+                "ask": 0.99,
                 "reader": 1
               }
             },
@@ -1549,19 +2132,19 @@
               {
                 "words": {
                   "start": 0,
-                  "end": 20,
-                  "text": "Check the error rate"
+                  "end": 16,
+                  "text": "check the errors"
                 },
                 "does": "action",
-                "p": 0.98
+                "p": 0.99
               }
             ],
-            "whole": 0.93,
-            "confidence": 1,
+            "whole": 0.35,
+            "confidence": 0.99,
             "weakest": {
-              "question": "route",
-              "top": "errors",
-              "p": 1
+              "question": "errors.service",
+              "top": "checkout",
+              "p": 0.99
             },
             "judgments": [
               {
@@ -1571,13 +2154,8 @@
               },
               {
                 "question": "errors.service",
-                "top": "payments",
-                "p": 1
-              },
-              {
-                "question": "errors.region",
-                "top": "eu-west",
-                "p": 1
+                "top": "checkout",
+                "p": 0.99
               }
             ],
             "runner_up": {
@@ -1634,252 +2212,570 @@
         },
         {
           "asked": {
-            "text": "the same for US East."
+            "text": "post in #incident"
           },
           "raw": {
             "route": {
-              "errors": 0.04,
-              "deploys": 0.08,
-              "logs": 0.02,
-              "suspect": 0,
-              "rollback": 0.05,
-              "post": 0,
-              "incidents": 0.01,
               "incident": 0,
-              "postmortem": 0.01,
-              "status": 0.03,
-              "outage": 0.02,
-              "none": 0.74
+              "postmortem": 0,
+              "errors": 0,
+              "suspect": 0,
+              "rollback": 0,
+              "logs": 0,
+              "none": 0,
+              "post": 1,
+              "incidents": 0,
+              "status": 0,
+              "deploys": 0,
+              "outage": 0
             },
             "errors.service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.16,
+              "unstated": 0.84
             },
             "errors.region": {
-              "eu-west": 0,
-              "us-east": 1,
+              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0
             },
             "deploys.service": {
+              "search": 0,
               "checkout": 0,
               "payments": 0,
-              "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "unstated": 0.78,
+              "none": 0.22
             },
             "deploys.region": {
-              "eu-west": 0,
-              "us-east": 1,
+              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0
             },
             "logs.service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.25,
+              "unstated": 0.75
             },
             "logs.region": {
-              "eu-west": 0,
-              "us-east": 1,
+              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0
+              "eu-west": 0
             },
             "rollback.service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.2,
+              "unstated": 0.8
             },
             "rollback.release": {
-              "none": 0,
-              "unstated": 1
+              "unstated": 1,
+              "none": 0
             },
             "rollback.region": {
-              "eu-west": 0,
-              "us-east": 1,
               "none": 0,
-              "unstated": 0
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0
             },
             "post.channel": {
-              "#incident": 0,
+              "#incident": 1,
               "#ops": 0,
-              "none": 0,
-              "unstated": 1
+              "unstated": 0,
+              "none": 0
             },
             "incident.number": {
-              "none": 0,
-              "unstated": 1
-            },
-            "status.component": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
               "none": 0.01,
               "unstated": 0.99
             },
+            "status.component": {
+              "search": 0,
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.17,
+              "unstated": 0.83
+            },
             "status.state": {
-              "investigating": 0,
+              "monitoring": 0,
               "identified": 0,
-              "monitoring": 0.01,
-              "resolved": 0.01,
-              "none": 0.03,
-              "unstated": 0.95
+              "investigating": 0,
+              "resolved": 0,
+              "unstated": 0.97,
+              "none": 0.03
             },
             "outage.service": {
+              "search": 0,
               "checkout": 0,
               "payments": 0,
-              "search": 0,
-              "none": 0,
-              "unstated": 1
+              "unstated": 1,
+              "none": 0
             },
             "outage.region": {
-              "eu-west": 0,
-              "us-east": 0.99,
+              "us-east": 0,
+              "unstated": 1,
               "none": 0,
-              "unstated": 0.01
+              "eu-west": 0
             },
             "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.31,
-              "unstated": 0.69
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.61,
+              "unstated": 0.39
             },
             "weave.view_errors__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_errors__region_1": {
-              "yes": 0.8
+              "us-east": 0,
+              "unstated": 0.77,
+              "none": 0.23,
+              "eu-west": 0
             },
             "weave.view_deploys__service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.19,
-              "unstated": 0.81
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.56,
+              "unstated": 0.44
             },
             "weave.view_deploys__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_deploys__region_1": {
-              "yes": 0.8
+              "none": 0.24,
+              "us-east": 0,
+              "unstated": 0.76,
+              "eu-west": 0
             },
             "weave.view_logs__service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.23,
-              "unstated": 0.77
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.56,
+              "unstated": 0.44
             },
             "weave.view_logs__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_logs__region_1": {
-              "yes": 0.81
+              "unstated": 0.81,
+              "none": 0.19,
+              "us-east": 0,
+              "eu-west": 0
             },
             "weave.view_rollback__service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.19,
-              "unstated": 0.81
+              "payments": 0,
+              "checkout": 0,
+              "unstated": 0.42,
+              "none": 0.58
             },
             "weave.view_rollback__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_rollback__region_1": {
-              "yes": 0.8
+              "none": 0.24,
+              "unstated": 0.76,
+              "us-east": 0,
+              "eu-west": 0
             },
             "weave.view_post__channel": {
-              "#incident": 0.01,
+              "#incident": 1,
               "#ops": 0,
-              "none": 0.38,
-              "unstated": 0.61
+              "unstated": 0,
+              "none": 0
+            },
+            "weave.is_post__channel_0": {
+              "yes": 0.89
             },
             "weave.view_status__component": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.28,
-              "unstated": 0.72
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.57,
+              "unstated": 0.43
             },
             "weave.view_status__state": {
-              "investigating": 0,
               "identified": 0,
-              "monitoring": 0,
+              "investigating": 0,
+              "unstated": 0.6,
               "resolved": 0,
-              "none": 0.32,
-              "unstated": 0.68
+              "none": 0.4,
+              "monitoring": 0
             },
             "weave.view_outage__service": {
-              "checkout": 0,
-              "payments": 0,
               "search": 0,
-              "none": 0.31,
-              "unstated": 0.69
+              "payments": 0,
+              "checkout": 0,
+              "none": 0.55,
+              "unstated": 0.45
             },
             "weave.view_outage__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
+              "unstated": 0.8,
+              "none": 0.2,
+              "us-east": 0,
+              "eu-west": 0
             },
-            "weave.is_outage__region_1": {
-              "yes": 0.79
+            "weave.does_post_0_0": {
+              "result": 0,
+              "courtesy": 0,
+              "action": 1,
+              "more": 0,
+              "arg:channel": 0
+            },
+            "weave.against_1461761989": {
+              "other": 0.01,
+              "less": 0.08,
+              "whole": 0.91
+            }
+          },
+          "decision": {
+            "outcome": "run",
+            "reflex": "post",
+            "args": {
+              "channel": {
+                "type": "word",
+                "word": "#incident"
+              }
+            },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
+            "basis": {
+              "channel": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
+                },
+                "does": "action",
+                "p": 1
+              }
+            ],
+            "whole": 0.91,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "post",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 1
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "errors",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "post",
+                "route": 1
+              },
+              {
+                "reflex": "errors",
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              },
+              {
+                "reflex": "outage",
+                "route": 0
+              }
+            ]
+          }
+        },
+        {
+          "asked": {
+            "text": "payments too"
+          },
+          "raw": {
+            "route": {
+              "incident": 0,
+              "deploys": 0.05,
+              "post": 0.07,
+              "none": 0.58,
+              "postmortem": 0,
+              "rollback": 0.01,
+              "incidents": 0.01,
+              "errors": 0.01,
+              "suspect": 0,
+              "status": 0.12,
+              "logs": 0.02,
+              "outage": 0.13
+            },
+            "errors.service": {
+              "search": 0,
+              "payments": 0.97,
+              "unstated": 0.03,
+              "none": 0,
+              "checkout": 0
+            },
+            "errors.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0,
+              "none": 0
+            },
+            "deploys.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "deploys.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "logs.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "logs.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "rollback.service": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "rollback.release": {
+              "unstated": 1,
+              "none": 0
+            },
+            "rollback.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "eu-west": 0,
+              "none": 0
+            },
+            "post.channel": {
+              "unstated": 0.98,
+              "#incident": 0,
+              "none": 0.01,
+              "#ops": 0.01
+            },
+            "incident.number": {
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "status.component": {
+              "search": 0,
+              "payments": 0.98,
+              "unstated": 0.02,
+              "none": 0,
+              "checkout": 0
+            },
+            "status.state": {
+              "resolved": 0.01,
+              "monitoring": 0.04,
+              "unstated": 0.92,
+              "investigating": 0.01,
+              "identified": 0,
+              "none": 0.02
+            },
+            "outage.service": {
+              "search": 0,
+              "payments": 0.99,
+              "unstated": 0.01,
+              "none": 0,
+              "checkout": 0
+            },
+            "outage.region": {
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0,
+              "eu-west": 0
+            },
+            "weave.view_errors__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_errors__service_1": {
+              "yes": 0.7
+            },
+            "weave.view_errors__region": {
+              "us-east": 0,
+              "unstated": 0.71,
+              "none": 0.29,
+              "eu-west": 0
+            },
+            "weave.view_deploys__service": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_deploys__service_1": {
+              "yes": 0.71
+            },
+            "weave.view_deploys__region": {
+              "us-east": 0,
+              "unstated": 0.7,
+              "none": 0.3,
+              "eu-west": 0
+            },
+            "weave.view_logs__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_logs__service_1": {
+              "yes": 0.69
+            },
+            "weave.view_logs__region": {
+              "us-east": 0,
+              "unstated": 0.72,
+              "none": 0.28,
+              "eu-west": 0
+            },
+            "weave.view_rollback__service": {
+              "search": 0,
+              "unstated": 0,
+              "payments": 1,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_rollback__service_1": {
+              "yes": 0.71
+            },
+            "weave.view_rollback__region": {
+              "us-east": 0,
+              "unstated": 0.75,
+              "eu-west": 0,
+              "none": 0.25
+            },
+            "weave.view_post__channel": {
+              "unstated": 0.44,
+              "#incident": 0,
+              "none": 0.53,
+              "#ops": 0.03
+            },
+            "weave.view_status__component": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_status__component_1": {
+              "yes": 0.7
+            },
+            "weave.view_status__state": {
+              "resolved": 0.02,
+              "monitoring": 0.08,
+              "unstated": 0.47,
+              "investigating": 0,
+              "identified": 0,
+              "none": 0.43
+            },
+            "weave.view_outage__service": {
+              "search": 0,
+              "payments": 1,
+              "unstated": 0,
+              "none": 0,
+              "checkout": 0
+            },
+            "weave.is_outage__service_1": {
+              "yes": 0.69
+            },
+            "weave.view_outage__region": {
+              "us-east": 0,
+              "unstated": 0.73,
+              "none": 0.27,
+              "eu-west": 0
             }
           },
           "decision": {
             "outcome": "abstain",
             "contenders": [
               {
-                "reflex": "deploys",
-                "route": 0.08
-              },
-              {
-                "reflex": "rollback",
-                "route": 0.05
-              },
-              {
-                "reflex": "errors",
-                "route": 0.04
+                "reflex": "outage",
+                "route": 0.13
               },
               {
                 "reflex": "status",
-                "route": 0.03
+                "route": 0.12
+              },
+              {
+                "reflex": "post",
+                "route": 0.07
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.05
               },
               {
                 "reflex": "logs",
                 "route": 0.02
               },
               {
-                "reflex": "outage",
-                "route": 0.02
-              },
-              {
-                "reflex": "incidents",
+                "reflex": "errors",
                 "route": 0.01
               },
               {
-                "reflex": "postmortem",
+                "reflex": "rollback",
+                "route": 0.01
+              },
+              {
+                "reflex": "incidents",
                 "route": 0.01
               },
               {
@@ -1887,11 +2783,11 @@
                 "route": 0
               },
               {
-                "reflex": "post",
+                "reflex": "incident",
                 "route": 0
               },
               {
-                "reflex": "incident",
+                "reflex": "postmortem",
                 "route": 0
               }
             ],
@@ -1899,382 +2795,523 @@
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.74
+                "p": 0.58
               }
             ]
           }
         },
         {
           "asked": {
-            "text": "the same for US East.",
-            "only": "errors"
+            "text": "payments too",
+            "only": "post"
           },
           "raw": {
             "route": {
-              "errors": 0.37,
-              "none": 0.63
+              "post": 0.45,
+              "none": 0.55
             },
-            "errors.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+            "post.channel": {
+              "unstated": 0.97,
+              "#incident": 0,
+              "none": 0.02,
+              "#ops": 0.01
             },
-            "errors.region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.23,
-              "unstated": 0.77
-            },
-            "weave.view_errors__region": {
-              "eu-west": 0,
-              "us-east": 1,
-              "none": 0,
-              "unstated": 0
-            },
-            "weave.is_errors__region_1": {
-              "yes": 0.77
+            "weave.view_post__channel": {
+              "unstated": 0.46,
+              "#incident": 0,
+              "none": 0.51,
+              "#ops": 0.03
             }
           },
           "decision": {
             "outcome": "abstain",
             "contenders": [
               {
-                "reflex": "errors",
-                "route": 0.37
+                "reflex": "post",
+                "route": 0.45
               }
             ],
             "judgments": [
               {
                 "question": "route",
                 "top": "none",
-                "p": 0.63
+                "p": 0.55
               }
             ]
           }
         },
         {
           "asked": {
-            "text": "Check the error rate for the same for US East. in EU West",
-            "only": "errors"
+            "text": "post in payments too",
+            "only": "post"
           },
           "raw": {
             "route": {
-              "errors": 1,
-              "none": 0
+              "post": 0.99,
+              "none": 0.01
             },
-            "errors.service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0,
-              "unstated": 1
+            "post.channel": {
+              "#incident": 0,
+              "#ops": 0.01,
+              "unstated": 0.41,
+              "none": 0.58
             },
-            "errors.region": {
-              "eu-west": 0.39,
-              "us-east": 0.33,
-              "none": 0.01,
-              "unstated": 0.27
+            "weave.view_post__channel": {
+              "#incident": 0,
+              "#ops": 0.05,
+              "unstated": 0.23,
+              "none": 0.72
             },
-            "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.19,
-              "unstated": 0.81
-            },
-            "weave.view_errors__region": {
-              "eu-west": 0.14,
-              "us-east": 0.71,
-              "none": 0.11,
-              "unstated": 0.04
-            },
-            "weave.is_errors__region_0": {
-              "yes": 0.67
-            },
-            "weave.is_errors__region_1": {
-              "yes": 0.58
-            },
-            "weave.does_errors_0_3": {
+            "weave.does_post_0_0": {
+              "more": 0.01,
+              "arg:channel": 0,
               "action": 0.99,
-              "arg:service": 0,
-              "arg:region": 0,
-              "result": 0.01,
               "courtesy": 0,
-              "more": 0
+              "result": 0
             },
-            "weave.does_errors_6_6": {
-              "action": 0.02,
-              "arg:service": 0.84,
-              "arg:region": 0.02,
-              "result": 0.09,
+            "weave.does_post_2_3": {
+              "more": 0.51,
+              "arg:channel": 0.47,
+              "action": 0.01,
               "courtesy": 0,
-              "more": 0.03
+              "result": 0.01
             },
-            "weave.does_errors_8_9": {
-              "action": 0,
-              "arg:service": 0,
-              "arg:region": 0.97,
-              "result": 0,
-              "courtesy": 0,
-              "more": 0.03
-            },
-            "weave.does_errors_11_12": {
-              "action": 0,
-              "arg:service": 0,
-              "arg:region": 0.92,
-              "result": 0,
-              "courtesy": 0,
-              "more": 0.08
-            },
-            "weave.against_3192640871": {
-              "whole": 0.08,
-              "less": 0.89,
-              "other": 0.03
+            "weave.against_1914900547": {
+              "less": 0.61,
+              "other": 0.04,
+              "whole": 0.35
             }
           },
           "decision": {
             "outcome": "ask",
-            "reflex": "errors",
+            "reflex": "post",
             "args": {},
             "left": [
               {
                 "words": {
                   "start": 0,
-                  "end": 20,
-                  "text": "Check the error rate"
+                  "end": 4,
+                  "text": "post"
                 },
                 "does": "action",
                 "p": 0.99
               },
               {
                 "words": {
-                  "start": 29,
-                  "end": 33,
-                  "text": "same"
+                  "start": 8,
+                  "end": 20,
+                  "text": "payments too"
                 },
-                "does": "answers",
-                "arg": "service",
-                "p": 0.84,
+                "does": "more",
+                "p": 0.51,
                 "again": true
-              },
-              {
-                "words": {
-                  "start": 38,
-                  "end": 45,
-                  "text": "US East"
-                },
-                "does": "answers",
-                "arg": "region",
-                "p": 0.97
-              },
-              {
-                "words": {
-                  "start": 50,
-                  "end": 57,
-                  "text": "EU West"
-                },
-                "does": "answers",
-                "arg": "region",
-                "p": 0.92
               }
             ],
             "unconsumed": [],
-            "whole": 0.08,
-            "confidence": 1,
+            "whole": 0.35,
+            "confidence": 0.99,
             "weakest": {
               "question": "route",
-              "top": "errors",
-              "p": 1
+              "top": "post",
+              "p": 0.99
             },
             "judgments": [
               {
                 "question": "route",
-                "top": "errors",
-                "p": 1
+                "top": "post",
+                "p": 0.99
               }
             ],
             "contenders": [
               {
-                "reflex": "errors",
-                "route": 1
+                "reflex": "post",
+                "route": 0.99
               }
             ],
             "missing": [
               {
-                "arg": "service",
-                "ask": "Which service?",
+                "arg": "channel",
+                "ask": "Which channel?",
                 "because": {
-                  "type": "unstated"
-                },
-                "words": {
-                  "start": 29,
-                  "end": 33,
-                  "text": "same"
+                  "type": "not_offered"
                 },
                 "choices": {
                   "type": "vocab",
                   "words": {
-                    "checkout": "The checkout service: cart and order confirmation.",
-                    "payments": "The payments service: card charges and refunds.",
-                    "search": "The search service: product search and suggestions."
+                    "#incident": "Where an outage is handled.",
+                    "#ops": "The operations team's channel."
                   }
                 }
-              },
-              {
-                "arg": "region",
-                "ask": "In which region?",
-                "because": {
-                  "type": "unsettled"
-                },
-                "words": {
-                  "start": 38,
-                  "end": 45,
-                  "text": "US East"
-                },
-                "choices": {
-                  "type": "vocab",
-                  "words": {
-                    "eu-west": "Europe, the Ireland region.",
-                    "us-east": "The United States, the Virginia region."
-                  }
-                },
-                "likely": "us-east"
               }
             ]
           }
         },
         {
           "asked": {
-            "text": "the same for US East.",
-            "only": "errors",
-            "named": {
-              "question": "weave.span_51_72",
-              "top": "errors",
-              "p": 1
-            }
+            "text": "post in #incident, payments too"
           },
           "raw": {
+            "route": {
+              "suspect": 0,
+              "incident": 0,
+              "post": 0.99,
+              "errors": 0,
+              "none": 0,
+              "outage": 0.01,
+              "deploys": 0,
+              "status": 0,
+              "logs": 0,
+              "postmortem": 0,
+              "incidents": 0,
+              "rollback": 0
+            },
             "errors.service": {
               "checkout": 0,
-              "payments": 0,
-              "search": 0,
-              "none": 0.01,
-              "unstated": 0.99
+              "unstated": 0.07,
+              "payments": 0.91,
+              "none": 0.02,
+              "search": 0
             },
             "errors.region": {
               "eu-west": 0,
-              "us-east": 1,
+              "us-east": 0,
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "deploys.service": {
+              "payments": 0.92,
+              "search": 0,
+              "unstated": 0.06,
+              "none": 0.02,
+              "checkout": 0
+            },
+            "deploys.region": {
+              "eu-west": 0,
+              "unstated": 1,
+              "us-east": 0,
+              "none": 0
+            },
+            "logs.service": {
+              "checkout": 0,
+              "search": 0,
+              "payments": 0.92,
+              "none": 0.02,
+              "unstated": 0.06
+            },
+            "logs.region": {
+              "eu-west": 0,
+              "unstated": 0.99,
+              "us-east": 0,
+              "none": 0.01
+            },
+            "rollback.service": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.92,
+              "none": 0.02,
+              "search": 0
+            },
+            "rollback.release": {
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "rollback.region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.99,
+              "none": 0.01
+            },
+            "post.channel": {
+              "#ops": 0,
+              "unstated": 0,
+              "none": 0.02,
+              "#incident": 0.98
+            },
+            "incident.number": {
+              "unstated": 1,
+              "none": 0
+            },
+            "status.component": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.92,
+              "none": 0.02,
+              "search": 0
+            },
+            "status.state": {
+              "investigating": 0.0202020202020202,
+              "unstated": 0.9393939393939393,
+              "monitoring": 0.0101010101010101,
+              "resolved": 0,
+              "identified": 0,
+              "none": 0.0303030303030303
+            },
+            "outage.service": {
+              "checkout": 0,
+              "unstated": 0.06,
+              "payments": 0.94,
               "none": 0,
-              "unstated": 0
+              "search": 0
+            },
+            "outage.region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 1,
+              "none": 0
             },
             "weave.view_errors__service": {
-              "checkout": 0,
-              "payments": 0,
+              "payments": 0.99,
               "search": 0,
-              "none": 0.24,
-              "unstated": 0.76
+              "unstated": 0,
+              "none": 0.01,
+              "checkout": 0
+            },
+            "weave.is_errors__service_1": {
+              "yes": 0.67
             },
             "weave.view_errors__region": {
               "eu-west": 0,
-              "us-east": 0.99,
+              "unstated": 0.65,
+              "us-east": 0,
+              "none": 0.35
+            },
+            "weave.view_deploys__service": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "weave.is_deploys__service_1": {
+              "yes": 0.65
+            },
+            "weave.view_deploys__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.67,
+              "none": 0.33
+            },
+            "weave.view_logs__service": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "weave.is_logs__service_1": {
+              "yes": 0.66
+            },
+            "weave.view_logs__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.65,
+              "none": 0.35
+            },
+            "weave.view_rollback__service": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
+            },
+            "weave.is_rollback__service_1": {
+              "yes": 0.67
+            },
+            "weave.view_rollback__region": {
+              "eu-west": 0,
+              "us-east": 0,
+              "unstated": 0.65,
+              "none": 0.35
+            },
+            "weave.view_post__channel": {
+              "#ops": 0,
+              "unstated": 0,
               "none": 0,
-              "unstated": 0.01
+              "#incident": 1
             },
-            "weave.is_errors__region_1": {
-              "yes": 0.77
+            "weave.is_post__channel_0": {
+              "yes": 0.8
             },
-            "weave.does_errors_1_1": {
-              "action": 0.18,
-              "arg:service": 0.15,
-              "arg:region": 0.15,
-              "result": 0.5,
-              "courtesy": 0,
-              "more": 0.02
+            "weave.view_status__component": {
+              "checkout": 0,
+              "unstated": 0,
+              "payments": 0.99,
+              "none": 0.01,
+              "search": 0
             },
-            "weave.against_3814428804": {
-              "whole": 0.46,
-              "less": 0.22,
-              "other": 0.32
+            "weave.is_status__component_1": {
+              "yes": 0.66
+            },
+            "weave.view_status__state": {
+              "investigating": 0.01,
+              "monitoring": 0.02,
+              "unstated": 0.48,
+              "resolved": 0,
+              "identified": 0,
+              "none": 0.49
+            },
+            "weave.view_outage__service": {
+              "checkout": 0,
+              "search": 0,
+              "unstated": 0,
+              "none": 0.01,
+              "payments": 0.99
+            },
+            "weave.is_outage__service_1": {
+              "yes": 0.71
+            },
+            "weave.view_outage__region": {
+              "eu-west": 0,
+              "unstated": 0.65,
+              "us-east": 0,
+              "none": 0.35
+            },
+            "weave.does_post_0_0": {
+              "action": 1,
+              "arg:channel": 0,
+              "more": 0,
+              "result": 0,
+              "courtesy": 0
+            },
+            "weave.does_post_3_4": {
+              "action": 0.01,
+              "arg:channel": 0.01,
+              "result": 0.02,
+              "more": 0.96,
+              "courtesy": 0
+            },
+            "weave.against_1461761989": {
+              "less": 0.9299999999999999,
+              "whole": 0.06,
+              "other": 0.01
             }
           },
           "decision": {
-            "outcome": "ask",
-            "reflex": "errors",
+            "outcome": "confirm",
+            "reflex": "post",
             "args": {
-              "region": {
+              "channel": {
                 "type": "word",
-                "word": "us-east"
+                "word": "#incident"
               }
             },
+            "call": "post channel=\"#incident\"",
+            "effect": "write",
             "basis": {
-              "region": {
+              "channel": {
                 "by": "views",
-                "ask": 1,
-                "reader": 0.99
+                "ask": 0.98,
+                "reader": 1
               }
             },
             "left": [
               {
                 "words": {
-                  "start": 4,
-                  "end": 8,
-                  "text": "same"
+                  "start": 0,
+                  "end": 4,
+                  "text": "post"
                 },
-                "does": "result",
-                "p": 0.5,
-                "again": true
-              }
-            ],
-            "unconsumed": [],
-            "whole": 0.46,
-            "confidence": 0.99,
-            "weakest": {
-              "question": "weave.view_errors__region",
-              "top": "us-east",
-              "p": 0.99
-            },
-            "judgments": [
-              {
-                "question": "weave.span_51_72",
-                "top": "errors",
+                "does": "action",
                 "p": 1
               },
               {
-                "question": "weave.view_errors__region",
-                "top": "us-east",
-                "p": 0.99
+                "words": {
+                  "start": 19,
+                  "end": 31,
+                  "text": "payments too"
+                },
+                "does": "more",
+                "p": 0.96,
+                "again": true
               }
             ],
+            "whole": 0.06,
+            "confidence": 0.98,
+            "weakest": {
+              "question": "post.channel",
+              "top": "#incident",
+              "p": 0.98
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "post",
+                "p": 0.99
+              },
+              {
+                "question": "post.channel",
+                "top": "#incident",
+                "p": 0.98
+              }
+            ],
+            "runner_up": {
+              "reflex": "outage",
+              "route": 0.01
+            },
             "contenders": [
               {
+                "reflex": "post",
+                "route": 0.99
+              },
+              {
+                "reflex": "outage",
+                "route": 0.01
+              },
+              {
                 "reflex": "errors",
-                "route": 1
+                "route": 0
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
               }
             ],
-            "missing": [
+            "prompt": {
+              "own": "post channel=\"#incident\" · write · weakest: channel 0.98",
+              "reason": "\"payments too\" asks for another thing; it holds all you said at 0.06, and a call runs at 0.30 or more; it leaves out \"payments too\"",
+              "template": "Post to #incident?"
+            },
+            "because": [
               {
-                "arg": "service",
-                "ask": "Which service?",
-                "because": {
-                  "type": "unstated"
-                },
-                "choices": {
-                  "type": "vocab",
-                  "words": {
-                    "checkout": "The checkout service: cart and order confirmation.",
-                    "payments": "The payments service: card charges and refunds.",
-                    "search": "The search service: product search and suggestions."
-                  }
+                "type": "more",
+                "words": {
+                  "start": 19,
+                  "end": 31,
+                  "text": "payments too"
                 }
+              },
+              {
+                "type": "whole",
+                "p": 0.06,
+                "floor": 0.3
               }
             ]
           }

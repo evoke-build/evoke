@@ -1,0 +1,7 @@
+adapter = "replay"
+
+[reflexes]
+errors = "./errors"
+logs   = "./logs"
+hire   = "./hire"
+order  = "./order"

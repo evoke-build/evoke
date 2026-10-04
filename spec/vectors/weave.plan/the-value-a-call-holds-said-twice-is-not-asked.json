@@ -1,0 +1,304 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the checkout errors for checkout",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the checkout errors for checkout",
+            "whole": true
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 5,
+                  "text": "check"
+                },
+                "does": "action",
+                "p": 1
+              },
+              {
+                "words": {
+                  "start": 19,
+                  "end": 25,
+                  "text": "errors"
+                },
+                "does": "result",
+                "p": 0.92
+              },
+              {
+                "words": {
+                  "start": 30,
+                  "end": 38,
+                  "text": "checkout"
+                },
+                "does": "answers",
+                "arg": "service",
+                "p": 0.97
+              }
+            ],
+            "whole": 0.22,
+            "confidence": 0.91,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.91
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.91
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "runner_up": {
+              "reflex": "logs",
+              "route": 0.09
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.91
+              },
+              {
+                "reflex": "logs",
+                "route": 0.09
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "errors service=\"checkout\" · read · weakest: route 0.91",
+              "reason": "it holds all you said at 0.22, and a call runs at 0.30 or more; it leaves out \"checkout\"; \"errors\" says what is wanted from the result",
+              "template": "Show the error rate of checkout?"
+            },
+            "because": [
+              {
+                "type": "whole",
+                "p": 0.22,
+                "floor": 0.3
+              }
+            ]
+          }
+        ]
+      ]
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the checkout errors for checkout",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the checkout errors for checkout",
+            "end": 38,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.99,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 5,
+                    "text": "check"
+                  },
+                  "does": "action",
+                  "p": 1
+                },
+                {
+                  "words": {
+                    "start": 19,
+                    "end": 25,
+                    "text": "errors"
+                  },
+                  "does": "result",
+                  "p": 0.92
+                },
+                {
+                  "words": {
+                    "start": 30,
+                    "end": 38,
+                    "text": "checkout"
+                  },
+                  "does": "answers",
+                  "arg": "service",
+                  "p": 0.97
+                }
+              ],
+              "whole": 0.22,
+              "confidence": 0.91,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.91
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.91
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.99
+                }
+              ],
+              "runner_up": {
+                "reflex": "logs",
+                "route": 0.09
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.91
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0.09
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"checkout\" · read · weakest: route 0.91",
+                "reason": "it holds all you said at 0.22, and a call runs at 0.30 or more; it leaves out \"checkout\"; \"errors\" says what is wanted from the result",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "whole",
+                  "p": 0.22,
+                  "floor": 0.3
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false
+      }
+    }
+  }
+}

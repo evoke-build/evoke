@@ -11,7 +11,7 @@ use evoke_core::adapter::Raw;
 use evoke_core::manifest::Effect;
 use evoke_core::name::LocalName;
 use evoke_core::weave::planning;
-use evoke_core::weave::{Answers, Because, Need, Order, Outcome, Planning, Via, Weave};
+use evoke_core::weave::{Answers, Because, Need, Order, Outcome, Planning, Repair, Via, Weave};
 use indexmap::IndexMap;
 use proptest::collection::vec;
 use proptest::prelude::*;
@@ -43,11 +43,11 @@ impl Part {
         }
     }
 
-    fn of_text(text: &str) -> Self {
+    /// The part a text's words are, where they are one.
+    fn read(text: &str) -> Option<Self> {
         [Self::Lights, Self::Timer, Self::Contact]
             .into_iter()
             .find(|part| part.text() == text)
-            .unwrap_or_else(|| panic!("no part reads «{text}»"))
     }
 }
 
@@ -145,8 +145,8 @@ fn request() -> impl Strategy<Value = Request> {
 }
 
 /// The request through the core's planner, every need answered: the judgments as generated, each part's
-/// decision from the fixtures, and any text decided narrowed to one reflex — a fan-out tried on a doubted part —
-/// matching nothing, so every part stays the step it is.
+/// decision from the fixtures, and any other text decided narrowed to one reflex — a fan-out tried on a doubted
+/// part — matching nothing, so every part stays the step it is.
 fn planned(request: &Request) -> Weave {
     let plan = plan_with(&[
         ("lights", request.effects[0]),
@@ -154,17 +154,30 @@ fn planned(request: &Request) -> Weave {
         ("contact", request.effects[2]),
     ]);
     planned_under(&plan, &request.text(), &request.judged, |text| {
-        decision(Part::of_text(text).reflex())
+        Part::read(text).map(|part| decision(part.reflex()))
     })
 }
 
+/// The reflex a decision is about, when it is about one.
+fn reflex_of(decision: &evoke_core::Decision) -> Option<&LocalName> {
+    match decision {
+        evoke_core::Decision::Run { chosen } | evoke_core::Decision::Confirm { chosen, .. } => {
+            Some(&chosen.call.reflex)
+        }
+        evoke_core::Decision::Ask { asking, .. } => Some(&asking.reflex),
+        evoke_core::Decision::Abstain { .. } => None,
+    }
+}
+
 /// A request through the planner under a plan, its needs answered: the judgments as given, each part decided
-/// by `decide`, a text narrowed to one reflex matching nothing.
+/// by `decide`; a text narrowed to one reflex read as `decide` reads it where its words are a part of that
+/// reflex — a step's words written for one of the values they hold — and matching nothing otherwise: a fan-out
+/// tried on a doubted part.
 pub(super) fn planned_under(
     plan: &Plan,
     input: &str,
     judged: &[f64],
-    decide: impl Fn(&str) -> evoke_core::Decision,
+    decide: impl Fn(&str) -> Option<evoke_core::Decision>,
 ) -> Weave {
     let mut answers = Answers::default();
     loop {
@@ -204,7 +217,8 @@ pub(super) fn planned_under(
                 Need::Refer { .. } => panic!("no part refers back"),
                 // No part points at another's value and every part reads as a reflex, or the words say
                 // nothing of it: every value stays its part's, and a part that matches nothing asks, its
-                // words no reflex's in the whole request either.
+                // words no reflex's in the whole request either; another value a part's words hold is asked
+                // for as well.
                 Need::Verify { request } => {
                     let raw = answers.verified.get_or_insert_default();
                     for id in request.questions.keys() {
@@ -213,6 +227,8 @@ pub(super) fn planned_under(
                             "asks"
                         } else if id.starts_with("weave.span_") {
                             "none"
+                        } else if id.starts_with("weave.again_") {
+                            "also"
                         } else {
                             "no"
                         };
@@ -222,10 +238,12 @@ pub(super) fn planned_under(
                 }
                 Need::Decide { asked } => {
                     for asked in asked {
-                        let decided = if asked.only.is_some() {
-                            abstain()
-                        } else {
-                            decide(&asked.text)
+                        let decided = match &asked.only {
+                            Some(reflex) => decide(&asked.text)
+                                .filter(|decided| reflex_of(decided) == Some(reflex))
+                                .unwrap_or_else(abstain),
+                            None => decide(&asked.text)
+                                .unwrap_or_else(|| panic!("no part reads «{}»", asked.text)),
                         };
                         answers.decided.push((asked, decided));
                     }
@@ -251,41 +269,47 @@ impl Service {
     }
 }
 
-/// A part of a request over the joins plan: a lookup of a service that returns its name, or the suspect that
-/// takes the three.
+/// A part of a request over the joins plan: a lookup of a service that returns its name, the errors of both
+/// services in one part's words, or the suspect that takes the three.
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum Lookup {
     Errors(Service),
     Deploys(Service),
     Logs(Service),
+    /// «errors checkout payments»: read for checkout, payments another value of the same argument.
+    ErrorsOfBoth,
     Suspect,
 }
 
 impl Lookup {
     fn text(self) -> String {
-        match self.service() {
-            Some(service) => format!("{} {}", self.reflex(), service.word()),
-            None => self.reflex().to_owned(),
+        match (self, self.service()) {
+            (Self::ErrorsOfBoth, _) => "errors checkout payments".to_owned(),
+            (_, Some(service)) => format!("{} {}", self.reflex(), service.word()),
+            (_, None) => self.reflex().to_owned(),
         }
     }
 
     fn reflex(self) -> &'static str {
         match self {
-            Self::Errors(_) => "errors",
+            Self::Errors(_) | Self::ErrorsOfBoth => "errors",
             Self::Deploys(_) => "deploys",
             Self::Logs(_) => "logs",
             Self::Suspect => "suspect",
         }
     }
 
+    /// The service the part's reading holds: the first its words name.
     fn service(self) -> Option<Service> {
         match self {
             Self::Errors(service) | Self::Deploys(service) | Self::Logs(service) => Some(service),
+            Self::ErrorsOfBoth => Some(Service::Checkout),
             Self::Suspect => None,
         }
     }
 
-    fn of_text(text: &str) -> Self {
+    /// The part a text's words are, where they are one.
+    fn read(text: &str) -> Option<Self> {
         let service = [Service::Checkout, Service::Payments]
             .into_iter()
             .find(|service| text.ends_with(service.word()))
@@ -294,11 +318,11 @@ impl Lookup {
             Self::Errors(service),
             Self::Deploys(service),
             Self::Logs(service),
+            Self::ErrorsOfBoth,
             Self::Suspect,
         ]
         .into_iter()
         .find(|part| part.text() == text)
-        .unwrap_or_else(|| panic!("no part reads «{text}»"))
     }
 
     /// The fixture's decision of the reflex, its service the one the words name.
@@ -333,6 +357,25 @@ impl Lookup {
     }
 }
 
+/// The calls the parts are, before a part that repeats one before it folds: «where the words of a step hold
+/// another value of an argument its call holds … and the value … is held by no other step of that reflex», the
+/// step is written again for it — the errors of both services are checkout's, then payments' unless another part
+/// names payments' errors, which then holds that value.
+fn written(parts: &[Lookup]) -> Vec<Lookup> {
+    let held = parts.contains(&Lookup::Errors(Service::Payments));
+    parts
+        .iter()
+        .flat_map(|part| match part {
+            Lookup::ErrorsOfBoth if held => vec![Lookup::Errors(Service::Checkout)],
+            Lookup::ErrorsOfBoth => vec![
+                Lookup::Errors(Service::Checkout),
+                Lookup::Errors(Service::Payments),
+            ],
+            other => vec![*other],
+        })
+        .collect()
+}
+
 /// A request over the joins plan: lookups and suspects, joined, judged.
 #[derive(Clone, Debug)]
 struct Joined {
@@ -361,6 +404,7 @@ fn lookup() -> impl Strategy<Value = Lookup> {
         2 => service().prop_map(Lookup::Errors),
         2 => service().prop_map(Lookup::Deploys),
         2 => service().prop_map(Lookup::Logs),
+        1 => Just(Lookup::ErrorsOfBoth),
         3 => Just(Lookup::Suspect)
     ]
 }
@@ -523,12 +567,32 @@ proptest! {
     #[test]
     fn joins_bind_by_name_under_any_plan(request in joined()) {
         let plan = joins();
-        let weave = planned_under(&plan, &request.text(), &request.judged, |text| Lookup::of_text(text).decision());
-        // A part that repeats one before it is that call, and returns its name once.
-        let parts = first_of_each(&request.parts);
+        let weave = planned_under(&plan, &request.text(), &request.judged, |text| Lookup::read(text).map(Lookup::decision));
+        // A part that repeats one before it is that call, and returns its name once; a part of two values is a
+        // step for each.
+        let parts = first_of_each(&written(&request.parts));
         prop_assert_eq!(weave.steps.len(), parts.len());
         for (step, part) in weave.steps.iter().zip(&parts) {
             prop_assert_eq!(step.reflex.as_ref().map(LocalName::as_str), Some(part.reflex()));
+        }
+        // «Each step is the person's own words with its value in place … the step itself stands on its own value
+        // alone, shown as typed»: a step's words are a part's, or the part of two values' for one of them, which
+        // keeps the words it was written from.
+        let both = Lookup::ErrorsOfBoth.text();
+        let written_for = |text: &str| request.parts.contains(&Lookup::ErrorsOfBoth) && (text == "errors checkout" || text == "errors payments");
+        // A step's repair says so: the other value's step is written `again`, the step its words were written from
+        // read `apart`, its words as typed kept. A repair is found by a step's words, so a part of the person's own
+        // that reads those words too, «errors checkout», reads `apart` where the step read apart folds into it:
+        // `apart` is not asserted to keep typed words.
+        let again = !request.parts.contains(&Lookup::Errors(Service::Payments)) && request.parts.contains(&Lookup::ErrorsOfBoth);
+        for step in &weave.steps {
+            prop_assert!(request.parts.iter().any(|part| part.text() == step.text) || written_for(&step.text), "step {}'s words «{}» are a part's or a value's", step.n, step.text);
+            prop_assert_eq!(step.repair == Some(Repair::Again), again && step.text == "errors payments", "step {} is written again for payments", step.n);
+            if let Some(typed) = &step.typed {
+                prop_assert_eq!(typed, &both, "step {} keeps the words it was written from", step.n);
+                prop_assert_eq!(step.text.as_str(), "errors checkout", "step {} reads its own value", step.n);
+                prop_assert_eq!(step.repair, Some(Repair::Apart), "step {} is read apart", step.n);
+            }
         }
         let (binds, refusals) = bound_by_name(&parts);
         // Every binding is a whole result by name, `takes`, and none carries a kind or a list.
@@ -564,16 +628,16 @@ proptest! {
 }
 
 /// The joins generator draws the shapes its invariants speak of: a suspect bound over all three, one refused for
-/// want of a source, one refused over two sources, and a suspect said twice.
+/// want of a source, one refused over two sources, a suspect said twice, and a part of two values written again.
 #[test]
 fn the_joins_generator_reaches_every_shape() {
     use proptest::strategy::ValueTree;
     use proptest::test_runner::TestRunner;
     let mut runner = TestRunner::deterministic();
-    let mut seen = [0usize; 4];
+    let mut seen = [0usize; 5];
     for _ in 0..300 {
         let request = joined().new_tree(&mut runner).expect("a request").current();
-        let (binds, refusals) = bound_by_name(&first_of_each(&request.parts));
+        let (binds, refusals) = bound_by_name(&first_of_each(&written(&request.parts)));
         let suspects: Vec<usize> = request
             .parts
             .iter()
@@ -597,12 +661,17 @@ fn the_joins_generator_reaches_every_shape() {
                 .any(|r| matches!(r, Because::SeveralSources { .. })),
         );
         seen[3] += usize::from(suspects.len() >= 2 && refusals.is_empty());
+        seen[4] += usize::from(
+            request.parts.contains(&Lookup::ErrorsOfBoth)
+                && !request.parts.contains(&Lookup::Errors(Service::Payments)),
+        );
     }
     let names = [
         "a suspect over three",
         "a name no step returns",
         "a name two steps return",
         "a suspect said twice, one call",
+        "a part of two values, a step each",
     ];
     for (count, name) in seen.iter().zip(names) {
         assert!(*count >= 15, "{name} drawn {count} times of 300");

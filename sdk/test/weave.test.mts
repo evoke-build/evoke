@@ -4,7 +4,9 @@
 // runs, a reference that takes nothing confirmed, a refusal, a decline that ends the weave after its stage, and a
 // signal mid-run over the cancel flow's recording — the body ended, the rest cancelled, the record on the reason.
 // Over the joins flow's home: a step that takes three whole results by name, handed beside its decision; a taker
-// refused outside a weave; a plan with no source, or two, refused before anything runs.
+// refused outside a weave; a plan with no source, or two, refused before anything runs. Over the each-value flow's
+// home: a step written again for each value the request asks for as well, run under the handlers, and words that
+// point at the values said before, read once for each, every such step waiting for a yes.
 
 import { deepStrictEqual, equal, ok, rejects } from "node:assert/strict"
 import { test } from "node:test"
@@ -228,4 +230,69 @@ test("a result reaches an argument named otherwise, by the name its source retur
   deepStrictEqual(woven.plan.binds, [{ from: 1, to: 2, arg: "record", field: "incident", via: "takes" }])
   equal(woven.status, "ran")
   equal(woven.steps[1]?.rounds[0]?.result?.text, "drafted the postmortem of incident 311")
+})
+
+// ---- over the each-value flow's home: one action asked for several values, a step for each; words that point at
+// the values said before, read once for each.
+
+const eachHome = fileURLToPath(new URL("../../spec/transcripts/each-value/home/.config/evoke", import.meta.url))
+const eachAnswers = new URL("../../spec/transcripts/each-value/answers.toml", import.meta.url)
+
+test("steps writes a step again for each other value the request asks for as well, the first read apart and shown as typed", async () => {
+  const project = await load({ root: eachHome, adapter: replay(eachAnswers) })
+  const { weave: plan } = await project.steps("look up the hires ana, maria and sam")
+  deepStrictEqual(
+    plan.steps.map(step => [step.text, step.typed, step.repair, "call" in step.decision ? step.decision.call : undefined]),
+    [
+      ["look up the hires ana", "look up the hires ana, maria and sam", "apart", 'hire person="ana"'],
+      ["look up the hires maria", undefined, "again", 'hire person="maria"'],
+      ["look up the hires sam", undefined, "again", 'hire person="sam"'],
+    ],
+  )
+  // Each step written again stands on the answer that the same is asked for its value as well.
+  const stands = plan.steps.map(step => (step.decision.judgments ?? []).filter(j => j.question.startsWith("weave.again_")).map(j => [j.top, j.p]))
+  deepStrictEqual(stands, [[], [["hire", 0.9]], [["hire", 0.79]]])
+})
+
+test("weave runs each step written again under the handlers, its decision traced as the plan asked it", async () => {
+  const project = await load({ root: eachHome, adapter: replay(eachAnswers) })
+  const confirmed: string[] = []
+  const woven = await project.weave("look up the hires ana, maria and sam", {
+    confirm: decision => {
+      confirmed.push(decision.call)
+      return true
+    },
+  })
+  equal(woven.status, "ran")
+  deepStrictEqual(confirmed, ['hire person="sam"'])
+  deepStrictEqual(
+    woven.steps.map(step => {
+      const decision = step.rounds[0]?.decision
+      return [step.status, decision !== undefined && "call" in decision ? decision.call : undefined, step.rounds[0]?.result?.text]
+    }),
+    [
+      ["ran", 'hire person="ana"', "ana: product designer, starts monday 19 october"],
+      ["ran", 'hire person="maria"', "maria: backend engineer, starts monday 5 october"],
+      ["ran", 'hire person="sam"', "sam: account executive, starts monday 12 october"],
+    ],
+  )
+  // The words decided again carry the calls that decided them, found under what the plan asked.
+  ok(woven.steps.every(step => (step.rounds[0]?.decision.trace.length ?? 0) > 0))
+})
+
+test("a step its pointing words wrote waits for a yes that names them, at its turn", async () => {
+  const project = await load({ root: eachHome, adapter: replay(eachAnswers) })
+  const asked: [number, string, string[]][] = []
+  const woven = await project.weave("look up ana & maria, order both a pro", {
+    confirm: (decision, turn) => {
+      asked.push([turn.step, decision.call, decision.because.map(cap => (cap.type === "pointed" ? `pointed ${cap.arg} "${cap.words}"` : cap.type))])
+      return decision.reflex === "hire" || decision.args.person?.type === "word" && decision.args.person.word === "ana"
+    },
+  })
+  deepStrictEqual(asked.slice(2), [
+    [3, 'order person="ana" model="pro"', ["destructive", 'pointed person "both"']],
+    [4, 'order person="maria" model="pro"', ["destructive", 'pointed person "both"']],
+  ])
+  equal(woven.status, "declined")
+  deepStrictEqual(woven.steps.map(step => step.status), ["ran", "ran", "ran", "declined"])
 })

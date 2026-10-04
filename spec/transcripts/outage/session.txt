@@ -364,7 +364,7 @@ $ evoke why
   → ran: errors service="checkout" region="eu-west"  0.95
     a read runs at 0.80 or more, and its least sure judgment is which reflex, 0.95; it holds all you said at 0.90, and a call runs at 0.30 or more
 
-  replay answered 124 questions in 5 rounds
+  replay answered 125 questions in 6 rounds
 # A request that asks one thing is one step, whatever its connectives.
 $ evoke "check the errors for checkout, and only in eu-west"
   errors service="checkout" region="eu-west"  0.95

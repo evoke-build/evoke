@@ -181,6 +181,83 @@
               }
             ]
           }
+        ],
+        [
+          {
+            "text": "kill the lights in the office",
+            "only": "lights"
+          },
+          {
+            "outcome": "run",
+            "reflex": "lights",
+            "args": {
+              "room": {
+                "type": "word",
+                "word": "office",
+                "value": "group-7"
+              },
+              "state": {
+                "type": "option",
+                "key": "off"
+              }
+            },
+            "call": "lights room=\"office\" state=\"off\"",
+            "effect": "write",
+            "basis": {
+              "room": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              },
+              "state": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95,
+                "yes": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 15,
+                  "text": "kill the lights"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "lights",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "lights",
+                "p": 0.95
+              },
+              {
+                "question": "lights.room",
+                "top": "office",
+                "p": 0.95
+              },
+              {
+                "question": "lights.state",
+                "top": "off",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "lights",
+                "route": 0.95
+              }
+            ]
+          }
         ]
       ],
       "judged": {
@@ -288,7 +365,7 @@
           },
           {
             "n": 2,
-            "text": "in the office too",
+            "text": "kill the lights in the office",
             "end": 49,
             "decision": {
               "outcome": "run",
@@ -322,13 +399,12 @@
               "left": [
                 {
                   "words": {
-                    "start": 14,
-                    "end": 17,
-                    "text": "too"
+                    "start": 0,
+                    "end": 15,
+                    "text": "kill the lights"
                   },
                   "does": "action",
-                  "p": 0.95,
-                  "again": true
+                  "p": 0.95
                 }
               ],
               "whole": 0.9,
@@ -355,23 +431,32 @@
                   "p": 0.95
                 }
               ],
-              "runner_up": {
-                "reflex": "timer",
-                "route": 0.02
-              },
               "contenders": [
                 {
                   "reflex": "lights",
                   "route": 0.95
-                },
-                {
-                  "reflex": "timer",
-                  "route": 0.02
                 }
               ]
             },
             "reflex": "lights",
-            "effect": "write"
+            "effect": "write",
+            "refs": [
+              {
+                "span": {
+                  "start": 5,
+                  "end": 15,
+                  "text": "the lights"
+                },
+                "from": [
+                  0
+                ],
+                "how": "phrase",
+                "weak": true,
+                "noun": "light"
+              }
+            ],
+            "repair": "spliced",
+            "typed": "in the office too"
           }
         ],
         "stages": [

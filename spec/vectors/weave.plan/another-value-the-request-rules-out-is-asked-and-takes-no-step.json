@@ -1,0 +1,473 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the errors for checkout, payments doesnt need checking",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the errors for checkout"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.99,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.98
+              }
+            ],
+            "whole": 0.35,
+            "confidence": 0.99,
+            "weakest": {
+              "question": "errors.service",
+              "top": "checkout",
+              "p": 0.99
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.99
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "payments doesnt need checking"
+          },
+          {
+            "outcome": "abstain",
+            "contenders": [
+              {
+                "reflex": "status",
+                "route": 0.09
+              },
+              {
+                "reflex": "errors",
+                "route": 0.03
+              },
+              {
+                "reflex": "post",
+                "route": 0.02
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              }
+            ],
+            "judgments": [
+              {
+                "question": "route",
+                "top": "none",
+                "p": 0.86
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the errors for checkout, payments doesnt need checking",
+            "whole": true
+          },
+          {
+            "outcome": "confirm",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 1,
+                "reader": 1
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 16,
+                  "text": "check the errors"
+                },
+                "does": "action",
+                "p": 0.98
+              },
+              {
+                "words": {
+                  "start": 31,
+                  "end": 60,
+                  "text": "payments doesnt need checking"
+                },
+                "does": "action",
+                "p": 0.43
+              }
+            ],
+            "whole": 0.19,
+            "confidence": 1,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 1
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 1
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 1
+              },
+              {
+                "reflex": "deploys",
+                "route": 0
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ],
+            "prompt": {
+              "own": "errors service=\"checkout\" · read · weakest: route 1.00",
+              "reason": "it holds all you said at 0.19, and a call runs at 0.30 or more",
+              "template": "Show the error rate of checkout?"
+            },
+            "because": [
+              {
+                "type": "whole",
+                "p": 0.19,
+                "floor": 0.3
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.36
+        },
+        "weave.count": {
+          "more": 0,
+          "none": 0,
+          "one": 0.67,
+          "two": 0.33
+        }
+      },
+      "verified": {
+        "weave.again_31_39_errors__service": {
+          "instead": 0,
+          "also": 0,
+          "out": 0.69,
+          "nothing": 0.31
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the errors for checkout, payments doesnt need checking",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the errors for checkout, payments doesnt need checking",
+            "end": 60,
+            "decision": {
+              "outcome": "confirm",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 1,
+                  "reader": 1
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 16,
+                    "text": "check the errors"
+                  },
+                  "does": "action",
+                  "p": 0.98
+                },
+                {
+                  "words": {
+                    "start": 31,
+                    "end": 60,
+                    "text": "payments doesnt need checking"
+                  },
+                  "does": "action",
+                  "p": 0.43
+                }
+              ],
+              "whole": 0.19,
+              "confidence": 1,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 1
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 1
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 1
+                }
+              ],
+              "runner_up": {
+                "reflex": "deploys",
+                "route": 0
+              },
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 1
+                },
+                {
+                  "reflex": "deploys",
+                  "route": 0
+                },
+                {
+                  "reflex": "logs",
+                  "route": 0
+                },
+                {
+                  "reflex": "suspect",
+                  "route": 0
+                },
+                {
+                  "reflex": "rollback",
+                  "route": 0
+                },
+                {
+                  "reflex": "post",
+                  "route": 0
+                },
+                {
+                  "reflex": "incidents",
+                  "route": 0
+                },
+                {
+                  "reflex": "incident",
+                  "route": 0
+                },
+                {
+                  "reflex": "postmortem",
+                  "route": 0
+                },
+                {
+                  "reflex": "status",
+                  "route": 0
+                }
+              ],
+              "prompt": {
+                "own": "errors service=\"checkout\" · read · weakest: route 1.00",
+                "reason": "it holds all you said at 0.19, and a call runs at 0.30 or more",
+                "template": "Show the error rate of checkout?"
+              },
+              "because": [
+                {
+                  "type": "whole",
+                  "p": 0.19,
+                  "floor": 0.3
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read"
+          }
+        ],
+        "stages": [
+          [
+            1
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 29,
+            "end": 31,
+            "word": ",",
+            "order": "and",
+            "p": 0.36
+          }
+        ],
+        "count": {
+          "one": 0.67,
+          "as_one": true
+        }
+      }
+    }
+  }
+}

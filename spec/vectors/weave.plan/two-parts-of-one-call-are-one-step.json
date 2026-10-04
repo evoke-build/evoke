@@ -315,6 +315,12 @@
           "more": 0.35,
           "one": 0.05
         }
+      },
+      "verified": {
+        "weave.span_35_56": {
+          "none": 0.9,
+          "errors": 0.1
+        }
       }
     }
   },

@@ -99,6 +99,15 @@ impl Rounds<'_> {
         line
     }
 
+    /// A step's line where no round of it ran: its decision's, with the step's words as typed and how a rule
+    /// settled them, as a round's line has them.
+    fn step_line(&self, decided: &Decided, step: &Step) -> Line {
+        let mut line = self.line(decided);
+        line.typed.clone_from(&step.typed);
+        line.repair = step.repair;
+        line
+    }
+
     /// One more line of the log, counted as the sentence's own.
     fn log(&self, line: &Line) -> Result<(), crate::hosts::Failure> {
         self.session.state.log(&line.log())?;
@@ -524,7 +533,7 @@ impl Rounds<'_> {
             let Some(decided) = woven.planned(step, &self.tags) else {
                 continue;
             };
-            let mut line = self.line(&decided);
+            let mut line = self.step_line(&decided, step);
             let (status, why) = became(step);
             line.step = Some(StepLine {
                 n: step.n,
@@ -662,7 +671,7 @@ impl Rounds<'_> {
         handling: &Handling,
         decided: &Decided,
     ) -> Handled {
-        let mut line = self.line(decided);
+        let mut line = self.step_line(decided, step);
         line.decision = handling.decision.clone();
         line.step = Some(StepLine {
             n: handling.step,
@@ -757,7 +766,7 @@ impl Rounds<'_> {
             {
                 continue;
             }
-            let mut line = self.line(&decided);
+            let mut line = self.step_line(&decided, step);
             line.step = Some(StepLine {
                 n: outcome.step,
                 of,

@@ -32,7 +32,7 @@ use crate::settle::{self, One, Settled};
 use crate::spoken::{self, Shape, Spoken};
 use crate::text::{Clean, Input, NonEmpty, Span};
 use crate::waits;
-use crate::weave::reading::is_span;
+use crate::weave::reading::stands_for_route;
 use crate::words::{self, Form, How, Listed, Spelled};
 
 /// The most values an ask lists from the session's results.
@@ -242,11 +242,11 @@ impl Judgment {
         }
     }
 
-    /// Whether the judgment says which reflex: the route's own question, or the one that stood for it, which
-    /// reflex the words ask for read in the whole request.
+    /// Whether the judgment says which reflex: the route's own question, or one that stands for the route
+    /// (`stands_for_route`).
     #[must_use]
     pub fn is_route(&self) -> bool {
-        self.question == QuestionId::Route || is_span(&self.question)
+        self.question == QuestionId::Route || stands_for_route(&self.question)
     }
 }
 
@@ -654,6 +654,12 @@ pub enum Cap {
     Named {
         words: String,
         p: Prob,
+    },
+    /// A value read from words of the request that point at several things said before, «both», which code alone
+    /// read as one of them: the argument, and those words as typed.
+    Pointed {
+        arg: ArgName,
+        words: String,
     },
 }
 
@@ -2829,7 +2835,12 @@ fn asking_of(chosen: &Chosen, because: &[Cap]) -> Option<Asking> {
         unconsumed: chosen.unconsumed.clone(),
         held: because
             .iter()
-            .filter(|cap| matches!(cap, Cap::Detail { .. } | Cap::Named { .. }))
+            .filter(|cap| {
+                matches!(
+                    cap,
+                    Cap::Detail { .. } | Cap::Named { .. } | Cap::Pointed { .. }
+                )
+            })
             .cloned()
             .collect(),
         whole: chosen.whole,

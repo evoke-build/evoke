@@ -71,7 +71,7 @@ pub const DEADLINE: Millis = Millis(30_000);
 
 /// The reader's version, which the digest holds before the set: it moves when a question evoke asks is worded
 /// anew, or an answer is read otherwise, so what was answered under one reader is never replayed under another.
-pub const READER: u32 = 11;
+pub const READER: u32 = 12;
 
 /// What the plan's digest holds before the set: the reader's version, then each built-in language pack's tag and
 /// digest, one a line, so that a pack that changes moves the digest as a reworded question does.

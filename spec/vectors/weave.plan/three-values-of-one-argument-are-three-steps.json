@@ -1,0 +1,581 @@
+{
+  "input": {
+    "plan": {
+      "$ref": "fixtures/plan-outage.json"
+    },
+    "gate": {
+      "route": 0.5,
+      "fits": 0.3,
+      "read": 0.8,
+      "write": 0.9,
+      "whole": 0.3
+    },
+    "input": "check the error rate of checkout, payments and search",
+    "tags": [],
+    "answers": {
+      "decided": [
+        [
+          {
+            "text": "check the error rate of checkout, payments and search",
+            "whole": true
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.95
+              },
+              {
+                "words": {
+                  "start": 34,
+                  "end": 53,
+                  "text": "payments and search"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.95
+              }
+            ],
+            "runner_up": {
+              "reflex": "deploys",
+              "route": 0.02
+            },
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              },
+              {
+                "reflex": "deploys",
+                "route": 0.02
+              },
+              {
+                "reflex": "logs",
+                "route": 0
+              },
+              {
+                "reflex": "suspect",
+                "route": 0
+              },
+              {
+                "reflex": "rollback",
+                "route": 0
+              },
+              {
+                "reflex": "post",
+                "route": 0
+              },
+              {
+                "reflex": "incidents",
+                "route": 0
+              },
+              {
+                "reflex": "incident",
+                "route": 0
+              },
+              {
+                "reflex": "postmortem",
+                "route": 0
+              },
+              {
+                "reflex": "status",
+                "route": 0
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate of checkout",
+            "only": "errors"
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "checkout"
+              }
+            },
+            "call": "errors service=\"checkout\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "route",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "checkout",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate of payments",
+            "only": "errors",
+            "named": {
+              "question": "weave.again_34_42_errors__service",
+              "top": "errors",
+              "p": 0.95
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "payments"
+              }
+            },
+            "call": "errors service=\"payments\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "weave.again_34_42_errors__service",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "weave.again_34_42_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "payments",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              }
+            ]
+          }
+        ],
+        [
+          {
+            "text": "check the error rate of search",
+            "only": "errors",
+            "named": {
+              "question": "weave.again_47_53_errors__service",
+              "top": "errors",
+              "p": 0.95
+            }
+          },
+          {
+            "outcome": "run",
+            "reflex": "errors",
+            "args": {
+              "service": {
+                "type": "word",
+                "word": "search"
+              }
+            },
+            "call": "errors service=\"search\"",
+            "effect": "read",
+            "basis": {
+              "service": {
+                "by": "views",
+                "ask": 0.95,
+                "reader": 0.95
+              }
+            },
+            "left": [
+              {
+                "words": {
+                  "start": 0,
+                  "end": 20,
+                  "text": "check the error rate"
+                },
+                "does": "action",
+                "p": 0.95
+              }
+            ],
+            "whole": 0.9,
+            "confidence": 0.95,
+            "weakest": {
+              "question": "weave.again_47_53_errors__service",
+              "top": "errors",
+              "p": 0.95
+            },
+            "judgments": [
+              {
+                "question": "weave.again_47_53_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              {
+                "question": "errors.service",
+                "top": "search",
+                "p": 0.95
+              }
+            ],
+            "contenders": [
+              {
+                "reflex": "errors",
+                "route": 0.95
+              }
+            ]
+          }
+        ]
+      ],
+      "judged": {
+        "weave.split_0": {
+          "yes": 0.1
+        },
+        "weave.split_1": {
+          "yes": 0.1
+        },
+        "weave.count": {
+          "one": 0.9,
+          "two": 0.05,
+          "more": 0.05
+        }
+      },
+      "verified": {
+        "weave.again_34_42_errors__service": {
+          "also": 0.95,
+          "instead": 0.02,
+          "out": 0.01,
+          "nothing": 0.02
+        },
+        "weave.again_47_53_errors__service": {
+          "also": 0.95,
+          "instead": 0.02,
+          "out": 0.01,
+          "nothing": 0.02
+        }
+      }
+    }
+  },
+  "expect": {
+    "ok": {
+      "type": "done",
+      "weave": {
+        "input": "check the error rate of checkout, payments and search",
+        "steps": [
+          {
+            "n": 1,
+            "text": "check the error rate of checkout",
+            "end": 53,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "checkout"
+                }
+              },
+              "call": "errors service=\"checkout\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "route",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "route",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "checkout",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "apart",
+            "typed": "check the error rate of checkout, payments and search"
+          },
+          {
+            "n": 2,
+            "text": "check the error rate of payments",
+            "end": 53,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "payments"
+                }
+              },
+              "call": "errors service=\"payments\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "weave.again_34_42_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_34_42_errors__service",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "payments",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "again"
+          },
+          {
+            "n": 3,
+            "text": "check the error rate of search",
+            "end": 53,
+            "decision": {
+              "outcome": "run",
+              "reflex": "errors",
+              "args": {
+                "service": {
+                  "type": "word",
+                  "word": "search"
+                }
+              },
+              "call": "errors service=\"search\"",
+              "effect": "read",
+              "basis": {
+                "service": {
+                  "by": "views",
+                  "ask": 0.95,
+                  "reader": 0.95
+                }
+              },
+              "left": [
+                {
+                  "words": {
+                    "start": 0,
+                    "end": 20,
+                    "text": "check the error rate"
+                  },
+                  "does": "action",
+                  "p": 0.95
+                }
+              ],
+              "whole": 0.9,
+              "confidence": 0.95,
+              "weakest": {
+                "question": "weave.again_47_53_errors__service",
+                "top": "errors",
+                "p": 0.95
+              },
+              "judgments": [
+                {
+                  "question": "weave.again_47_53_errors__service",
+                  "top": "errors",
+                  "p": 0.95
+                },
+                {
+                  "question": "errors.service",
+                  "top": "search",
+                  "p": 0.95
+                }
+              ],
+              "contenders": [
+                {
+                  "reflex": "errors",
+                  "route": 0.95
+                }
+              ]
+            },
+            "reflex": "errors",
+            "effect": "read",
+            "repair": "again"
+          }
+        ],
+        "stages": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "verdict": {
+          "outcome": "run"
+        },
+        "exclusive": false,
+        "splits": [
+          {
+            "start": 32,
+            "end": 34,
+            "word": ",",
+            "order": "and",
+            "p": 0.1
+          },
+          {
+            "start": 42,
+            "end": 47,
+            "word": "and",
+            "order": "and",
+            "p": 0.1
+          }
+        ],
+        "count": {
+          "one": 0.9,
+          "as_one": true
+        }
+      }
+    }
+  }
+}

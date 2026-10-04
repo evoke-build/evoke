@@ -1,0 +1,82 @@
+# One action asked for several values is a step for each: the engine is asked whether each other value is asked
+# for as well, and why shows what it answered. A part that says the same for another value is the step before it
+# with that value in place; words that point at the values said before are read once for each, every such step
+# waiting for a yes; a part that nothing serves refuses the whole request.
+$ evoke "look up the hires ana, maria and sam"
+  1  hire person="ana"  0.91
+  2  hire person="maria"  0.87 · with 1
+  3  hire person="sam" · read · weakest: route 0.79 · with 1, 2
+       a read runs at 0.80 or more
+ana: product designer, starts monday 19 october
+maria: backend engineer, starts monday 5 october
+  3  hire person="sam" · read · weakest: route 0.79
+       a read runs at 0.80 or more
+  Look up sam's hire?  [y]es [n]o [t]each > y
+sam: account executive, starts monday 12 october
+$ evoke why
+  "look up the hires ana, maria and sam"
+
+  1 · look up the hires ana, maria and sam
+    which reflex            hire 1.00
+                            Look up a new hire by name, with their role and start date.
+    person                  ana 0.91   (not said 0.08 · said, and not on the list 0.01)
+                            asked a second way: ana 0.99; the less sure of the two counts
+    holds all you said      0.55
+    read apart              for the one value it holds: each other value it names is a step of its own after it
+    → ran: hire person="ana"  0.91
+      a read runs at 0.80 or more, and its least sure judgment is person, 0.91; it holds all you said at 0.55, and a call runs at 0.30 or more
+
+  2 · look up the hires maria
+    which reflex            hire 0.90
+                            Look up a new hire by name, with their role and start date.
+    person                  maria 0.87   (not said 0.13)
+                            asked a second way: maria 1.00; the less sure of the two counts
+    holds all you said      0.54
+    another value           asked for as well 0.90 · says something else 0.07 · ruled out 0.03
+    → ran: hire person="maria"  0.87
+      a read runs at 0.80 or more, and its least sure judgment is person, 0.87; it holds all you said at 0.54, and a call runs at 0.30 or more
+
+  3 · look up the hires sam
+    which reflex            hire 0.79
+                            Look up a new hire by name, with their role and start date.
+    person                  sam 0.88   (not said 0.12)
+                            asked a second way: sam 1.00; the less sure of the two counts
+    another value           asked for as well 0.79 · says something else 0.14 · ruled out 0.06 · in place of the one read 0.01
+    → ran at your yes: hire person="sam" · read · weakest: route 0.79
+      a read runs at 0.80 or more
+
+  replay answered 102 questions in 10 rounds
+$ evoke "error rate for payments in eu-west, and the same for us-east"
+  1  errors service="payments" region="eu-west"  1.00
+  2  errors service="payments" region="us-east"  1.00 · with 1
+payments in eu-west: 8.4% errors since 14:02
+payments in us-east: 8.4% errors since 14:02
+$ evoke "look up ana & maria, order both a pro"
+  1  hire person="ana" · read · weakest: route 0.80
+       person was read from "ana"
+  2  hire person="maria" · read · weakest: person 0.70
+       a read runs at 0.80 or more
+  3  order person="ana" model="pro" · destructive · weakest: person 0.77
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  4  order person="maria" model="pro" · destructive · weakest: person 0.91
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  1  hire person="ana" · read · weakest: route 0.80
+       person was read from "ana"
+  Look up ana's hire?  [y]es [n]o [t]each > y
+ana: product designer, starts monday 19 october
+  2  hire person="maria" · read · weakest: person 0.70
+       a read runs at 0.80 or more
+  Look up maria's hire?  [y]es [n]o [t]each > y
+maria: backend engineer, starts monday 5 october
+  3  order person="ana" model="pro" · destructive · weakest: person 0.77
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  Order a laptop for ana?  [y]es [n]o [t]each > y
+pro ordered for ana, PO-20463, at the desk by monday 19 october
+  4  order person="maria" model="pro" · destructive · weakest: person 0.91
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  Order a laptop for maria?  [y]es [n]o [t]each > y
+pro ordered for maria, PO-20461, at the desk by monday 5 october
+$ evoke "check the error rate of checkout and book a meeting room"
+  1  errors service="checkout"  0.99
+  2  "book a meeting room" · no reflex · with 1
+[2]

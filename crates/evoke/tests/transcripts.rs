@@ -246,6 +246,11 @@ fn orders() {
     flow("orders");
 }
 
+#[test]
+fn each_value() {
+    flow("each-value");
+}
+
 /// The recipe yields the commit `spec/transcripts/update/home/.config/evoke/evoke.lock` records.
 #[test]
 fn the_recipe_reproduces_the_locked_commit() {

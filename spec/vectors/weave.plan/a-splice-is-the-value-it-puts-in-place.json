@@ -412,7 +412,8 @@
               }
             ],
             "prompt": {
-              "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · also \"put\"",
+              "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+              "reason": "\"put\" asks for another thing",
               "template": "Set the den lights off?"
             },
             "because": [
@@ -436,6 +437,14 @@
           "two": 0.6,
           "more": 0.35,
           "one": 0.05
+        }
+      },
+      "verified": {
+        "weave.again_32_34_lights__state": {
+          "nothing": 0.9,
+          "also": 0.05,
+          "instead": 0.03,
+          "out": 0.02
         }
       }
     }
@@ -566,7 +575,8 @@
                 }
               ],
               "prompt": {
-                "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92 · also \"put\"",
+                "own": "lights room=\"den\" state=\"off\" · write · weakest: room 0.92",
+                "reason": "\"put\" asks for another thing",
                 "template": "Set the den lights off?"
               },
               "because": [
