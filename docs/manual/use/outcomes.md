@@ -70,6 +70,9 @@ separated by `;`.
 - **read with the whole sentence**: the step's words match nothing alone, and the step comes from reading them
   with the rest of the sentence. `"payments too" matches nothing alone, and the whole request reads it as errors
   at 0.85, which always waits for a yes` ([Weaving](weaving.md)).
+- **one of several**: the value was read from words that point at several things named earlier, like `both`,
+  which make one step for each of them. `person was read from "both"`
+  ([Weaving](weaving.md#one-action-for-several-values)).
 
 `[t]each` records only what the input stated. An argument you filled in at a prompt is not recorded. The answer
 is read from the terminal, never from stdin. With no terminal, a confirm exits 3 with the command to run yourself.
@@ -200,8 +203,10 @@ each step, under its number when there are several, with a row a judgment:
 - `holds all you said`: how far the call holds all you typed, where the call was read back against the input;
   under the bar, the words it leaves out, and the words that say what is wanted from the result.
 - What a rule did: `the same call`, a part that adds to this call; `read with`, how a part that matched nothing
-  alone was settled; `the playbook`, the playbook that wrote the step; `takes`, the results it takes whole;
-  `runs if`, what picks it.
+  alone was settled; `read apart`, how a step was read on its own, out of a longer part; `another value`, what
+  the classifier answered about the value a step was written for
+  ([Weaving](weaving.md#one-action-for-several-values)); `the playbook`, the playbook that wrote the step;
+  `takes`, the results it takes whole; `runs if`, what picks it.
 - `→`: what would become of the call — `runs`, `waits for a yes`, `asks`, `refused` — with the call as the
   plan prints it, and under it why.
 

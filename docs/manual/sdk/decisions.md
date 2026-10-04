@@ -56,8 +56,9 @@ An app that wants a reflex's wording with a body of its own calls `decide`, swit
 `prompt.own` is `evoke`'s line: the call, the effect and the weakest judgment. `prompt.reason` says in one
 line why the call waits, a phrase for each cap, as the CLI prints it under the call. `prompt.template` is the
 reflex's own question, filled in. `because` lists why it stopped: `destructive`,
-`no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail`
-([Outcomes](../use/outcomes.md#confirm)). A confirm decision runs only with `run(d, { confirmed: true })`.
+`no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail`,
+`named`, `pointed` ([Outcomes](../use/outcomes.md#confirm)). A confirm decision runs only with
+`run(d, { confirmed: true })`.
 
 `decide` reads the input as one call. When its words say the call is wanted once more, like `too` or `the same
 for`, the decision is a confirm with `more`, since there is no second step to be the other time. `steps` reads
@@ -135,9 +136,10 @@ pinned.set       // the plan digest it was decided over; pinned.answers, every a
 Each step carries its `decision`, the `Decision` `decide` would have made of its words alone; `shared` names
 the words the sentence said once for several steps that reached it, `{ service: { word: "checkout", via:
 "fill" } }`; `repair` says how a part that was not decided on its own became a step, `"narrowed"`, `"spliced"`,
-`"merged"`, `"split"` or `"named"`. A binding whose `via` is `"takes"` is a whole result by the name its source
-returns, with no `kind`; a plan with no source for one, or two, has `verdict.outcome` `"refuse"` and `no_source` or
-`several_sources` among its `because`. A step a playbook wrote carries `from`, the playbook, its step and the
+`"merged"`, `"split"`, `"corrected"`, `"named"`, `"first"`, `"verb"`, `"again"` or `"apart"`
+([The JSON line](../reference/json.md#shape-by-outcome)). A binding whose `via` is `"takes"` is a whole result by
+the name its source returns, with no `kind`; a plan with no source for one, or two, has `verdict.outcome`
+`"refuse"` and `no_source` or `several_sources` among its `because`. A step a playbook wrote carries `from`, the playbook, its step and the
 slots the sentence filled ([Playbooks](../author/playbooks.md)); `folded` names the parts of the sentence that
 repeat one of its steps; and the verdict's `because` holds `reviewed` per playbook, with the sentence's own
 prompt. `steps(input, { ask })` answers a slot the sentence lacks before the plan is made, as `weave`'s `ask`

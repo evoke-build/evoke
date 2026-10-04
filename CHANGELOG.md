@@ -10,6 +10,20 @@ release` dates it. The format is [Keep a Changelog](https://keepachangelog.com/e
   `adapter = "clef"` in `evoke.toml`, the token in `CLOUDFLARE_API_TOKEN`, the account's id in
   `CLOUDFLARE_ACCOUNT_ID`, and `clef()` and `clefFlash()` from `@evoke-build/evoke/clef` in the SDK. They ship no
   bars, so every call through them waits for a yes until `[adapters.clef] gate` gives `route`, `read` and `write`.
+- One action asked for several values is a step for each: `look up the hires ana, maria and sam` looks up three
+  hires. Each step is judged on its own, so one that is less sure waits for a yes.
+- A part that says the same for another value repeats the step before it with that value: `error rate for payments
+  in eu-west, and the same for us-east` checks both regions. Words that point at several things named before, as
+  in `look up ana & maria, order both a pro`, are a step for each, and each of those steps waits for a yes.
+- Two different actions joined by `n`, `&` or `+` stay two steps where the cut is not sure, even when the sentence
+  reads as one thing. Each waits for a yes that names the other.
+- A part that looks like an earlier step said again is read with the whole sentence first. Where that names another
+  action, the part is a step of its own, and it waits for a yes.
+- `why` shows a step read for its own value as `read apart`, and a step written for another value with the
+  classifier's answers, `another value`. In `--json` and the SDK, a step's `repair` can be `again` or `apart`, and
+  a decision's `because` can hold `pointed`.
+- `evoke run` refuses a plan file made under an earlier release as stale, and names the `evoke try --save` that
+  makes it again.
 
 ## [0.20.0] - 2026-10-03
 

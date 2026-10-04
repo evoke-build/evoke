@@ -39,5 +39,5 @@ than English that read a record, with how its records fared ([Calibrating](calib
 ## What a change to a pack does
 
 A plan file carries the digest of every pack it was read with. A release that changes a pack refuses a plan file
-made under the old one as stale, as it does when a question's wording changes, and `evoke run` makes the plan again
-([Weaving](weaving.md)).
+made under the old one as stale, as it does when a question's wording changes. `evoke run` then names the
+`evoke try --save` that makes the plan again ([Weaving](weaving.md)).

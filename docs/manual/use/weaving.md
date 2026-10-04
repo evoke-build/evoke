@@ -27,7 +27,11 @@ den lights off
   confirms before it runs, naming the other, `"start a 10 minute timer" may add a detail this call does not
   hold`.
 - With the connectives, the classifier is asked how many things the sentence asks for. Where it says one, the
-  sentence is one step, and no connective cuts it: "check the errors for checkout, and only in eu-west".
+  sentence is one step, and no connective cuts it: "check the errors for checkout, and only in eu-west". Two
+  cases still give several steps. One action asked for several values is a step for each value
+  ([One action for several values](#one-action-for-several-values)). And a cut at a sign typed for `and` that the
+  classifier was not sure of stands when each part, read alone, asks for a different reflex. Each part then waits
+  for a yes that names the other.
 - Each part is decided as one input is: routed, gated, its arguments read. A part that matches nothing on its own
   is tried as another item of its neighbour's task first: "check stock for widgets and gadgets" is two stock
   checks. So is a part that is only a determiner and one word, "the office" in "kill the lights in the den and
@@ -82,7 +86,8 @@ den lights off
 - Two parts that read as the same call, no value of one differing from the other's, are one step: "check the
   errors for checkout, and the errors in eu-west" is one check, of checkout in eu-west. Where a part could repeat
   either of two calls, its own words pick one, "the second one", "the last", or it stays a step of its own. The
-  plan names the part: `folded "the errors in eu-west" into 1`.
+  plan names the part: `folded "the errors in eu-west" into 1`. Where the part's own words say what to do and the
+  whole sentence reads them as another reflex, the part is a step of its own, and it waits for a yes.
 - What you say you will do yourself is no step. A clause that opens with `before` or `after` and has `I` or
   `we` as its subject is set aside where it stands: in "pull the payments logs before I forget", the logs are
   pulled, and the plan says `set aside "before I forget"`. `before you X` and `after you X` still order two
@@ -108,6 +113,87 @@ den lights off
   own call lacks, and names the value's words: `"friday" may add a detail this call does not hold`.
 - A sentence reads most surely when it asks for a few steps. The plan is settled before anything runs, so the
   longer a sentence grows, the more often one of its steps stops to ask.
+
+## One action for several values
+
+A request can name several values for one action: three people to look up, or two regions to check. `evoke`
+plans a step for each value the request asks for. It reads the request for one value first. Then it asks the
+classifier whether the request asks for each other value as well. Each step is judged alone: one that is sure
+runs, and one that is less sure waits for a yes.
+
+```text
+$ evoke "look up the hires ana, maria and sam"
+  1  hire person="ana"  0.91
+  2  hire person="maria"  0.87 · with 1
+  3  hire person="sam" · read · weakest: route 0.79 · with 1, 2
+       a read runs at 0.80 or more
+ana: product designer, starts monday 19 october
+maria: backend engineer, starts monday 5 october
+  3  hire person="sam" · read · weakest: route 0.79
+       a read runs at 0.80 or more
+  Look up sam's hire?  [y]es [n]o [t]each > y
+sam: account executive, starts monday 12 october
+```
+
+A part that asks for the same with another value repeats the step before it, with that value in place. After two
+different actions, such a part is read on its own, since `the same` could mean both.
+
+```text
+$ evoke "error rate for payments in eu-west, and the same for us-east"
+  1  errors service="payments" region="eu-west"  1.00
+  2  errors service="payments" region="us-east"  1.00 · with 1
+payments in eu-west: 8.4% errors since 14:02
+payments in us-east: 8.4% errors since 14:02
+```
+
+Words that point at several things named earlier, like `both`, become one step for each of them. `both` names
+none of them itself, so each of those steps waits for a yes. Its line names the words its value was read from:
+`person was read from "both"`.
+
+```text
+$ evoke "look up ana & maria, order both a pro"
+  1  hire person="ana" · read · weakest: route 0.80
+       person was read from "ana"
+  2  hire person="maria" · read · weakest: person 0.70
+       a read runs at 0.80 or more
+  3  order person="ana" model="pro" · destructive · weakest: person 0.77
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  4  order person="maria" model="pro" · destructive · weakest: person 0.91
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  …
+  3  order person="ana" model="pro" · destructive · weakest: person 0.77
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  Order a laptop for ana?  [y]es [n]o [t]each > y
+pro ordered for ana, PO-20463, at the desk by monday 19 october
+  4  order person="maria" model="pro" · destructive · weakest: person 0.91
+       it cannot be undone, so it always waits for a yes; person was read from "both"
+  Order a laptop for maria?  [y]es [n]o [t]each > y
+pro ordered for maria, PO-20461, at the desk by monday 5 october
+```
+
+`evoke why` shows how each step was read. The first step's `read apart` row says it was read for its own value
+alone. Each other step was decided on your words, its own value in place of the values you listed:
+`look up the hires sam`. Its `another value` row shows what the classifier answered: whether the request asks for
+that value as well, means something else by it, rules it out, or wants it instead of the value read. The step's
+`which reflex` is the share for `asked for as well`. For sam it was 0.79, under the 0.80 a read needs, so that
+step waited for a yes.
+
+```text
+$ evoke why
+  "look up the hires ana, maria and sam"
+
+  1 · look up the hires ana, maria and sam
+    …
+    read apart              for the one value it holds: each other value it names is a step of its own after it
+    …
+
+  3 · look up the hires sam
+    which reflex            hire 0.79
+    …
+    another value           asked for as well 0.79 · says something else 0.14 · ruled out 0.06 · in place of the one read 0.01
+    → ran at your yes: hire person="sam" · read · weakest: route 0.79
+      a read runs at 0.80 or more
+```
 
 ## What a step takes from another
 

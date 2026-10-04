@@ -27,7 +27,7 @@ line, with the adapter's raw answers and the input's candidates next to it. `why
 | `left`       | ○   | ○       | ○   |         | The words of the input that no value holds, each with what it does: `{ words, does, p }`, `does` one of `action`, `answers` with its `arg`, `result`, `nothing`, `more`; `cut` is `true` where the words follow a value and may be part of it, `again` where they say the call is wanted once more, `read` where a value of the call was read from them |
 | `whole`      | ○   | ○       | ○   |         | How far the call holds all the input says, where the call was read back against it |
 | `quotes`     | ○   | ○       | ○   |         | The texts in quotes that no value took, each with its marks, where the reflex takes a text in quotes |
-| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail`, `named` |
+| `because`    |     | ●       |     |         | Why it stopped, in order: `destructive`, `no_gate`, `under_floor`, `one_view`, `respelt`, `text_read`, `more`, `cut`, `quoted`, `text_left`, `whole`, `detail`, `named`, `pointed` |
 | `unconsumed` | ○   | ○       | ●   |         | Typed spans no argument took                                    |
 | `missing`    |     |         | ●   |         | Per missing argument: `arg`, `ask`, `because` (`unstated`, `out_of_range`, `not_offered`, `unsettled` or `unread`), `words` when the input holds words that answer the ask, `choices`; a pick's `choices.recent` lists the values recalled from this session's results, when any, and its `choices.readings` what the words that answer the ask read as, when they say a value aloud; `likely`, the listed word made ready for a yes, when there is one |
 | `trace`      | ●   | ●       | ●   | ●       | One entry per adapter call, a round of questions each: `{ adapter, questions, ms }`. Empty when the answers came from the cache |
@@ -67,7 +67,17 @@ words anew, the words as typed, and `repair` where it was not one part decided o
 `spliced`, an item of its neighbour's task; `merged`, a part read with its neighbour; `split`, a part of a joint
 the classifier read as one thing; `corrected`, a part that says what not to do read with its step; `named`, a part
 that matched nothing alone, read as the reflex the whole sentence gives its words, its decision judging the reflex
-by that question, `weave.span_<start>_<end>`, in place of `route`. A binding's
+by that question, `weave.span_<start>_<end>`, in place of `route`. `spliced` is also a part put in the words of
+the step before it: one that holds only values, or one that says the same for another value. So is each step
+written for one of the things that words like `both` point at. Its decision's `because` holds `pointed`,
+`{ "type": "pointed", "arg", "words" }`: the argument, and those words as typed. `first` and `verb` are two verbs
+before one thing: the first read without the second, and the second a step of its own that takes from it.
+`apart` is a step read for the one value its call holds, with its words as typed in `typed`. `again` is the step
+before it written again for another value its words name, with that value in place. Its decision judges the
+reflex by the question whether the request asks for that value as well,
+`weave.again_<start>_<end>_<reflex>__<argument>`, in place of `route`. The answers are `also` where it does,
+`instead` where it means the value in place of the one read, `out` where it rules the value out, and `nothing`
+where the words say something else. A binding's
 `via` is `fill`, `rewrite` or `takes`, a whole result by the name its source returns, with no `kind`; the
 verdict's `because` names `no_source` and `several_sources` where such a result stops the plan. Each of
 `splits` carries `cut` where the plan cuts the sentence there; `count`, where the sentence could be cut, holds
